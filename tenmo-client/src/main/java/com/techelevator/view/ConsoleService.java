@@ -15,6 +15,10 @@ public class ConsoleService {
 		this.out = new PrintWriter(output, true);
 		this.in = new Scanner(input);
 	}
+	
+	public ConsoleService() {
+		
+	}
 
 	public Object getChoiceFromOptions(Object[] options) {
 		Object choice = null;
