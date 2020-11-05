@@ -1,5 +1,7 @@
 package com.techelevator.tenmo.dao;
 
-public class AccountsDAO {
+public interface AccountsDAO {
 
+	
+	
 }
