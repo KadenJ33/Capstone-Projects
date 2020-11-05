@@ -1,8 +1,12 @@
 package com.techelevator.tenmo;
 
+import java.math.BigDecimal;
+import java.util.Scanner;
+
 import org.springframework.web.client.RestTemplate;
 
 import com.techelevator.tenmo.models.AuthenticatedUser;
+import com.techelevator.tenmo.models.User;
 import com.techelevator.tenmo.models.UserCredentials;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.AuthenticationServiceException;
@@ -13,7 +17,7 @@ public class App {
 
 private static final String API_BASE_URL = "http://localhost:8080/";
     
-    private static final String MENU_OPTION_EXIT = "Exit";
+	private static final String MENU_OPTION_EXIT = "Exit";
     private static final String LOGIN_MENU_OPTION_REGISTER = "Register";
 	private static final String LOGIN_MENU_OPTION_LOGIN = "Login";
 	private static final String[] LOGIN_MENU_OPTIONS = { LOGIN_MENU_OPTION_REGISTER, LOGIN_MENU_OPTION_LOGIN, MENU_OPTION_EXIT };
@@ -29,8 +33,9 @@ private static final String API_BASE_URL = "http://localhost:8080/";
     private ConsoleService console;
     private AuthenticationService authenticationService;
 //    public RestTemplate restTemplate = new RestTemplate();
-    private UserService userService;
-
+    private UserService userService = new UserService(API_BASE_URL);
+    public Scanner scanner = new Scanner(System.in);
+    
     public static void main(String[] args) {
     	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL));
     	app.run();
@@ -89,8 +94,30 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 	private void sendBucks() {
 		// TODO Auto-generated method stub
-		System.out.println(userService.getAllUsers());
-	}
+		
+		User[] userInfo = userService.list();
+		System.out.println("-----------------------------------");
+		System.out.println("Users");
+		System.out.println("ID      " + "Name");
+		System.out.println("-----------------------------------");
+		for(User user : userInfo) {
+		System.out.println(user.getId() + ",      " + user.getUsername());
+		}
+		System.out.println("-----------------------------------");
+		System.out.println("");
+		System.out.println("Enter ID of user you are sending to (0 to cancel): ");
+		
+		
+		String id = scanner.nextLine();
+		for (User user : userInfo) {
+			if (Integer.parseInt(id) == user.getId()) {
+				System.out.println("Enter Amount: ");
+				String amount = scanner.nextLine();
+				BigDecimal bigDecimal = new BigDecimal(amount);
+			}
+		}
+		
+		}
 
 	private void requestBucks() {
 		// TODO Auto-generated method stub
@@ -144,6 +171,8 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 			UserCredentials credentials = collectUserCredentials();
 		    try {
 				currentUser = authenticationService.login(credentials);
+				//important
+				userService.AUTH_TOKEN = currentUser.getToken();
 			} catch (AuthenticationServiceException e) {
 				System.out.println("LOGIN ERROR: "+e.getMessage());
 				System.out.println("Please attempt to login again.");

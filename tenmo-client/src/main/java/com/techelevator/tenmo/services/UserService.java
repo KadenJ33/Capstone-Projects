@@ -23,7 +23,7 @@ public class UserService {
         BASE_URL = url;
     }
 	
-	public User[] getAllUsers() {
+	public User[] list() {
 		User[] userInfo = null;
 		try {
 			userInfo = restTemplate.exchange(BASE_URL + "users", HttpMethod.GET, makeUserEntity(), User[].class).getBody();
