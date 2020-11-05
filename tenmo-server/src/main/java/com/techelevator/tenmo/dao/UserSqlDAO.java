@@ -29,7 +29,7 @@ public class UserSqlDAO implements UserDAO {
     	
     	
     	
-    	return currentbalance;
+    	return (User) currentBalance;
     }
 
     @Override
