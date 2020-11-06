@@ -18,29 +18,36 @@ public class AccountsSqlDAO implements AccountsDAO {
         this.jdbcTemplate = jdbcTemplate;
     }
 	
-//	public void transferMoney(Account user) {
-//		String sql = "UPDATE accounts SET balance = ? WHERE user_id = ?";
-//		SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
-//		jdbcTemplate.update(results, user.getAmount(), user.getId());
-//	}
+	public void transferMoney(Accounts user) {
+		String sql = "UPDATE accounts SET balance = ? WHERE user_id = ?";
+		SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+		jdbcTemplate.update(results, user.getBalance(), user.getUserId(), user.getAccountId());
+	}
 	
 	public AccountTransfer transferHistory(AccountTransfer transfer) {
-		String sql = "INSERT INTO transfers(transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount), " +
-				"VALUES(?, ?, ?, ?, ?, ?) ";
+		String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount), " +
+				"VALUES(?, ?, ?, ?, ?) ";
 		transfer.setTransferId(getNextTransferId());
 		jdbcTemplate.update(sql, transfer.getTransferId(), transfer.getTransferTypeId(), transfer.getTransferStatusId(), transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
 		return transfer;
 	}
 	
 	private AccountTransfer mapToRowTransfer(SqlRowSet rowSet) {
-		AccountTransfer theTransfer = new AccountTransfer();
-		theTransfer.setTransferId(rowSet.getInt("transfer_id"));
-		theTransfer.setTransferTypeId(rowSet.getInt("transfer_type_id"));
-		theTransfer.setTransferStatusId(rowSet.getInt("transfer_status_id"));
-		theTransfer.setAccountFrom(rowSet.getInt("account_from"));
-		theTransfer.setAccountTo(rowSet.getInt("account_to"));
-		theTransfer.setAmount(rowSet.getBigDecimal("amount"));
-		return theTransfer;
+		AccountTransfer theTransferHistory = new AccountTransfer();
+		theTransferHistory.setTransferId(rowSet.getInt("transfer_id"));
+		theTransferHistory.setTransferTypeId(rowSet.getInt("transfer_type_id"));
+		theTransferHistory.setTransferStatusId(rowSet.getInt("transfer_status_id"));
+		theTransferHistory.setAccountFrom(rowSet.getInt("account_from"));
+		theTransferHistory.setAccountTo(rowSet.getInt("account_to"));
+		theTransferHistory.setAmount(rowSet.getBigDecimal("amount"));
+		return theTransferHistory;
+	}
+	
+	private void mapToRowAccounts(SqlRowSet rowSet) {
+		Accounts theTransfer = new Accounts();
+		theTransfer.setBalance(rowSet.getBigDecimal("balance"));
+		theTransfer.setUserId(rowSet.getInt("user_id"));
+//		theTransfer.setAccountId(rowSet.getInt("account_id"));
 	}
 	
 	private int getNextTransferId() {
@@ -48,7 +55,7 @@ public class AccountsSqlDAO implements AccountsDAO {
 		if(nextIdResult.next()) {
 			return nextIdResult.getInt(1);
 		} else {
-			throw new RuntimeException("Something went wrong while getting an id for the new city");
+			throw new RuntimeException("Something went wrong while getting an id for the new transfer");
 		}
 	}
 	
