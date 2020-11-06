@@ -11,5 +11,7 @@ public interface AccountsDAO {
 	
 	AccountTransfer transferHistory(AccountTransfer transfer);
 	
-	List<AccountTransfer> getTransferHistory(AccountTransfer userId);
+	List<AccountTransfer> getTransferHistory(Long userId);
+	
+	List<AccountTransfer> getTransferDetails(Long userId, Long transferId);
 }

@@ -21,12 +21,25 @@ public class AccountsSqlDAO implements AccountsDAO {
         this.jdbcTemplate = jdbcTemplate;
     }
 	
+<<<<<<< HEAD
 	@Override
 	public void transferMoney(Accounts user) {
 		String sql = "UPDATE accounts SET balance = ? WHERE user_id = ?";
 		jdbcTemplate.update(sql, user.getBalance(), user.getUserId());
 	}
 	
+=======
+	
+	@Override
+	public void transferMoney(Accounts user) {
+		String sql = "UPDATE accounts SET balance = ? WHERE user_id = ?";
+		
+		jdbcTemplate.update(sql, user.getBalance(), user.getUserId());
+	}
+	
+	
+	
+>>>>>>> 689aae308afbd4e37b55be0bc84f8b7d5998a511
 	@Override
 	public AccountTransfer transferHistory(AccountTransfer transfer) {
 		String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount), " +
@@ -35,19 +48,39 @@ public class AccountsSqlDAO implements AccountsDAO {
 		jdbcTemplate.update(sql, transfer.getTransferId(), transfer.getTransferTypeId(), transfer.getTransferStatusId(), transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
 		return transfer;
 	}
+	
+	
+	
 	@Override
-	public List<AccountTransfer> getTransferHistory(AccountTransfer userId) {
+	public List<AccountTransfer> getTransferHistory(Long userId) {
 		List<AccountTransfer> transferList = new ArrayList<>();
 		String sql = "SELECT transfer_id, account_from, account_to, amount FROM transfers " + 
 					 "JOIN users ON transfers.account_from = users.user_id WHERE user_id = ?";
 		SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
 		while(results.next()) {
 			AccountTransfer theTransfers = new AccountTransfer();
-			theTransfers = mapToRowTransfer(results);
+			theTransfers.setTransferId(results.getInt("transfer_id"));
+			theTransfers.setAccountFrom(results.getInt("account_from"));
+			theTransfers.setAccountTo(results.getInt("account_to"));
+			theTransfers.setAmount(results.getBigDecimal("amount"));
 			transferList.add(theTransfers);
 		}
 		return transferList;
 	}
+	
+	@Override
+	public List<AccountTransfer> getTransferDetails(Long userId, Long transferId) {
+		List<AccountTransfer> transferDetails = new ArrayList<>();
+		String sql = "SELECT * FROM transfers  JOIN users ON transfers.account_from = users.user_id WHERE user_id = ? AND transfer_id = ?";
+		SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId, transferId);
+		while(results.next()) {
+			AccountTransfer theDetails = new AccountTransfer();
+			theDetails = mapToRowTransfer(results);
+			transferDetails.add(theDetails);
+		}
+		return transferDetails;
+	}
+	
 	
 	private AccountTransfer mapToRowTransfer(SqlRowSet rowSet) {
 		AccountTransfer theTransferHistory = new AccountTransfer();
