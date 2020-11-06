@@ -32,6 +32,13 @@ public class AccountsSqlDAO implements AccountsDAO {
 		
 	}
 
+	public BigDecimal getBalance(Long accountId) {
+		String sql = "SELECT balance FROM accounts WHERE account_id = ?";
+		SqlRowSet result = jdbcTemplate.queryForRowSet(sql, accountId);
+		BigDecimal balance = result.getBigDecimal(0);
+		return balance;
+	}
+	
 	@Override
 	public AccountTransfer transferHistory(AccountTransfer transfer) {
 		String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount), " +

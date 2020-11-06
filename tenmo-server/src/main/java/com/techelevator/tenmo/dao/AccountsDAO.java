@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.dao;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.techelevator.tenmo.model.AccountTransfer;
@@ -8,6 +9,7 @@ import com.techelevator.tenmo.model.TransferDTO;
 
 public interface AccountsDAO {
 
+
 	void transferMoney(AccountTransfer transfer);
 	
 	AccountTransfer transferHistory(AccountTransfer transfer);
@@ -15,4 +17,6 @@ public interface AccountsDAO {
 	List<AccountTransfer> getTransferHistory(Long userId);
 	
 	List<AccountTransfer> getTransferDetails(Long userId, Long transferId);
+
+	BigDecimal getBalance(Long accountId);
 }

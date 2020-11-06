@@ -1,5 +1,6 @@
 package com.techelevator.tenmo.controller;
 
+import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.List;
 
@@ -27,7 +28,7 @@ import com.techelevator.tenmo.model.User;
 public class AccountController {
 
 	private static final String API_BASE_URL = "http://localhost:8080/";
-	private AccountsDAO dao;
+	AccountsDAO dao;
 	UserDAO userDao;
 	public AccountController(AccountsDAO accountsDao, UserDAO userDao) {
 		dao = accountsDao;
@@ -39,6 +40,11 @@ public class AccountController {
 		
 		dao.transferMoney(transfer);
 		dao.transferHistory(transfer);
+	}
+
+	@RequestMapping(path = "balance/{accountId}", method = RequestMethod.GET)
+	public BigDecimal getBalance(@PathVariable Long accountId) {
+		return dao.getBalance(accountId);
 	}
 	
 	@RequestMapping(path = "transfer-history", method = RequestMethod.GET)

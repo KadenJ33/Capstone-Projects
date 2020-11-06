@@ -176,7 +176,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
             }
         }
 	}
-
+ 
 	private void login() {
 		System.out.println("Please log in");
 		currentUser = null;
