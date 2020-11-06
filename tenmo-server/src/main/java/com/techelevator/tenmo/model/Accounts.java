@@ -13,6 +13,10 @@ public class Accounts {
 		this.balance = balance;
 		this.userId = userId;
 	}
+	
+	public Accounts() {
+		
+	}
 
 	public int getAmountId() {
 		return amountId;
