@@ -20,23 +20,14 @@ public class AccountsSqlDAO implements AccountsDAO {
 	public AccountsSqlDAO(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-<<<<<<< HEAD
 	
-	public void transferMoney(Accounts user) {
-		String sql = "UPDATE accounts SET balance = ? WHERE user_id = ?";
-		SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
-		jdbcTemplate.update(results, user.getBalance(), user.getUserId(), user.getAccountId());
-	}
-	
-=======
 	@Override
 	public void transferMoney(Accounts user) {
 		String sql = "UPDATE accounts SET balance = ? WHERE user_id = ?";
-		SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
-		jdbcTemplate.update(results, user.getBalance(), user.getUserId());
+		jdbcTemplate.update(sql, user.getBalance(), user.getUserId());
 	}
+	
 	@Override
->>>>>>> 87e6279f65f9a6ab8d40a2ed847ae29a159def4f
 	public AccountTransfer transferHistory(AccountTransfer transfer) {
 		String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount), " +
 				"VALUES(?, ?, ?, ?, ?) ";
