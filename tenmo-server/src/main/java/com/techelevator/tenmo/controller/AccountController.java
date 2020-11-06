@@ -17,6 +17,7 @@ import com.techelevator.tenmo.dao.AccountsDAO;
 import com.techelevator.tenmo.dao.UserDAO;
 import com.techelevator.tenmo.model.AccountTransfer;
 import com.techelevator.tenmo.model.Accounts;
+import com.techelevator.tenmo.model.TransferDTO;
 import com.techelevator.tenmo.model.User;
 
 @RestController
@@ -40,6 +41,12 @@ public class AccountController {
 	}
 	
 	
+	@RequestMapping(path = "/accounts/transfer", method = RequestMethod.PUT)
+	public void transferMoney(@RequestBody AccountTransfer transfer) {
+		
+		dao.transferMoney(transfer);
+		dao.transferHistory(transfer);
+	}
 	
 	@RequestMapping(path = "transfer-history", method = RequestMethod.GET)
 	public List<AccountTransfer> transferList(Principal principal) {
