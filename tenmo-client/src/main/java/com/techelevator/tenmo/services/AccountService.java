@@ -1,5 +1,7 @@
 package com.techelevator.tenmo.services;
 
+import java.util.List;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -7,13 +9,14 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 import com.techelevator.tenmo.models.Account;
+import com.techelevator.tenmo.models.AccountTransfer;
 import com.techelevator.tenmo.models.User;
 import com.techelevator.view.ConsoleService;
 
 public class AccountService {
 	
 	public static String AUTH_TOKEN = "";
-	private final String BASE_URL;
+	private final String BASE_URL = "http://localhost:8080/";
 	public RestTemplate restTemplate = new RestTemplate();
 	
 	public AccountService(String url) {
@@ -29,7 +32,16 @@ public class AccountService {
 		}
 		return account;
 	}
-	
+	public AccountTransfer transferList(AccountTransfer accountId) throws AccountServiceException {
+		AccountTransfer transferList = null;
+		try {
+			transferList = restTemplate.exchange(BASE_URL + "transfer-history/" + accountId, HttpMethod.GET, makeAuthEntity(), AccountTransfer.class).getBody();
+			
+		}catch (RestClientResponseException ex) {
+			throw new AccountServiceException(ex.getRawStatusCode() + " : " + ex.getResponseBodyAsString());
+		}
+		return transferList;
+	}
 
 	private HttpEntity makeAuthEntity() {
 		HttpHeaders headers = new HttpHeaders();
