@@ -35,17 +35,16 @@ public class AccountController {
 		this.userDao = userDao;
 	}
 	
-	@RequestMapping(path = "balance/{accountId}", method = RequestMethod.GET)
-	public BigDecimal getBalance(@PathVariable Long accountId) {
-		return dao.getBalance(accountId);
-	}
-	
-	
 	@RequestMapping(path = "/accounts/transfer", method = RequestMethod.PUT)
 	public void transferMoney(@RequestBody AccountTransfer transfer) {
 		
 		dao.transferMoney(transfer);
 		dao.transferHistory(transfer);
+	}
+
+	@RequestMapping(path = "balance/{accountId}", method = RequestMethod.GET)
+	public BigDecimal getBalance(@PathVariable Long accountId) {
+		return dao.getBalance(accountId);
 	}
 	
 	@RequestMapping(path = "transfer-history", method = RequestMethod.GET)
