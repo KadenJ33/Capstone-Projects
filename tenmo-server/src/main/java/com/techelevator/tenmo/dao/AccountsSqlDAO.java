@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.techelevator.tenmo.model.AccountTransfer;
 import com.techelevator.tenmo.model.Accounts;
+import com.techelevator.tenmo.model.TransferDTO;
 
 @Component
 public class AccountsSqlDAO implements AccountsDAO {
@@ -21,25 +22,16 @@ public class AccountsSqlDAO implements AccountsDAO {
         this.jdbcTemplate = jdbcTemplate;
     }
 	
-<<<<<<< HEAD
 	@Override
-	public void transferMoney(Accounts user) {
-		String sql = "UPDATE accounts SET balance = ? WHERE user_id = ?";
-		jdbcTemplate.update(sql, user.getBalance(), user.getUserId());
-	}
-	
-=======
-	
-	@Override
-	public void transferMoney(Accounts user) {
-		String sql = "UPDATE accounts SET balance = ? WHERE user_id = ?";
+	public void transferMoney(AccountTransfer transfer) {
+		String sql = "UPDATE accounts SET balance = balance - ? WHERE user_id = ?";
+		jdbcTemplate.update(sql, transfer.getAmount(), transfer.getAccountFrom());
 		
-		jdbcTemplate.update(sql, user.getBalance(), user.getUserId());
+		String sql2 = "UPDATE accounts SET balance = balance + ? WHERE user_id = ?";
+		jdbcTemplate.update(sql2, transfer.getAmount(), transfer.getAccountTo());
+		
 	}
-	
-	
-	
->>>>>>> 689aae308afbd4e37b55be0bc84f8b7d5998a511
+
 	@Override
 	public AccountTransfer transferHistory(AccountTransfer transfer) {
 		String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount), " +
@@ -48,8 +40,6 @@ public class AccountsSqlDAO implements AccountsDAO {
 		jdbcTemplate.update(sql, transfer.getTransferId(), transfer.getTransferTypeId(), transfer.getTransferStatusId(), transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
 		return transfer;
 	}
-	
-	
 	
 	@Override
 	public List<AccountTransfer> getTransferHistory(Long userId) {
@@ -74,15 +64,14 @@ public class AccountsSqlDAO implements AccountsDAO {
 		String sql = "SELECT * FROM transfers  JOIN users ON transfers.account_from = users.user_id WHERE user_id = ? AND transfer_id = ?";
 		SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId, transferId);
 		while(results.next()) {
-			AccountTransfer theDetails = new AccountTransfer();
-			theDetails = mapToRowTransfer(results);
+			AccountTransfer theDetails = mapToRowTransferHistory(results);
 			transferDetails.add(theDetails);
 		}
 		return transferDetails;
 	}
 	
 	
-	private AccountTransfer mapToRowTransfer(SqlRowSet rowSet) {
+	private AccountTransfer mapToRowTransferHistory(SqlRowSet rowSet) {
 		AccountTransfer theTransferHistory = new AccountTransfer();
 		theTransferHistory.setTransferId(rowSet.getInt("transfer_id"));
 		theTransferHistory.setTransferTypeId(rowSet.getInt("transfer_type_id"));
@@ -93,11 +82,16 @@ public class AccountsSqlDAO implements AccountsDAO {
 		return theTransferHistory;
 	}
 	
+	private void mapToRowTransfer(SqlRowSet rowSet) {
+		TransferDTO transfer = new TransferDTO();
+		transfer.setAmount(rowSet.getBigDecimal("amount"));
+		transfer.setAccountTo(rowSet.getInt("accountTo"));
+	}
+	
 	private void mapToRowAccounts(SqlRowSet rowSet) {
-		Accounts theTransfer = new Accounts();
-		theTransfer.setBalance(rowSet.getBigDecimal("balance"));
-		theTransfer.setUserId(rowSet.getInt("user_id"));
-//		theTransfer.setAccountId(rowSet.getInt("account_id"));
+		Accounts user = new Accounts();
+		user.setBalance(rowSet.getBigDecimal("amount"));
+		user.setUserId(rowSet.getInt("userId"));
 	}
 	
 	private int getNextTransferId() {

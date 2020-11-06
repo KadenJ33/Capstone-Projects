@@ -4,10 +4,11 @@ import java.util.List;
 
 import com.techelevator.tenmo.model.AccountTransfer;
 import com.techelevator.tenmo.model.Accounts;
+import com.techelevator.tenmo.model.TransferDTO;
 
 public interface AccountsDAO {
 
-	void transferMoney(Accounts user);
+	void transferMoney(AccountTransfer transfer);
 	
 	AccountTransfer transferHistory(AccountTransfer transfer);
 	

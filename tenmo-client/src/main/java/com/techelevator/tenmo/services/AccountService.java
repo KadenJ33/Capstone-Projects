@@ -16,7 +16,7 @@ import com.techelevator.view.ConsoleService;
 public class AccountService {
 	
 	public static String AUTH_TOKEN = "";
-	private final String BASE_URL = "http://localhost:8080/";
+	private final String BASE_URL;
 	public RestTemplate restTemplate = new RestTemplate();
 	
 	public AccountService(String url) {

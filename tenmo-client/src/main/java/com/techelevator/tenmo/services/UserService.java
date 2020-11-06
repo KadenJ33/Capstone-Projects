@@ -23,12 +23,12 @@ public class UserService {
         BASE_URL = url;
     }
 	
-	public User[] list() {
+	public User[] list() throws UserServiceException {
 		User[] userInfo = null;
 		try {
 			userInfo = restTemplate.exchange(BASE_URL + "users", HttpMethod.GET, makeUserEntity(), User[].class).getBody();
 		} catch (RestClientResponseException e) {
-//			throw new UserServiceException(e.getRawStatusCode() + " : " + e.getResponseBodyAsString());
+			throw new UserServiceException(e.getRawStatusCode() + " : " + e.getResponseBodyAsString());
 		}
 		return userInfo;
 	}
