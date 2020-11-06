@@ -16,7 +16,7 @@ import com.techelevator.view.ConsoleService;
 public class AccountService {
 	
 	public static String AUTH_TOKEN = "";
-	private final String BASE_URL = "http://localhost:8080/";
+	private final String BASE_URL;
 	public RestTemplate restTemplate = new RestTemplate();
 	
 	public AccountService(String url) {
@@ -26,7 +26,7 @@ public class AccountService {
 	public Account viewCurrentBalance(Long accountId) throws AccountServiceException {
 		Account account = null;
 		try {
-			account = restTemplate.exchange(BASE_URL + "balance/" + accountId, HttpMethod.GET, makeAuthEntity(), Account.class).getBody();
+			account = restTemplate.exchange(BASE_URL + "balance/{accountId}", HttpMethod.GET, makeAuthEntity(), Account.class, accountId).getBody();
 		} catch (RestClientResponseException ex) {
 			throw new AccountServiceException(ex.getRawStatusCode() + " : " + ex.getResponseBodyAsString());
 		}

@@ -21,25 +21,23 @@ public class AccountsSqlDAO implements AccountsDAO {
         this.jdbcTemplate = jdbcTemplate;
     }
 	
-<<<<<<< HEAD
+	@Override
+	public BigDecimal getBalance(Long accountId) {
+		String sql = "SELECT balance FROM accounts WHERE account_id = ?";
+		SqlRowSet result = jdbcTemplate.queryForRowSet(sql, accountId);
+		BigDecimal balance = result.getBigDecimal(0);
+		return balance;
+	}
+	
+	
 	@Override
 	public void transferMoney(Accounts user) {
 		String sql = "UPDATE accounts SET balance = ? WHERE user_id = ?";
 		jdbcTemplate.update(sql, user.getBalance(), user.getUserId());
 	}
 	
-=======
 	
-	@Override
-	public void transferMoney(Accounts user) {
-		String sql = "UPDATE accounts SET balance = ? WHERE user_id = ?";
-		
-		jdbcTemplate.update(sql, user.getBalance(), user.getUserId());
-	}
-	
-	
-	
->>>>>>> 689aae308afbd4e37b55be0bc84f8b7d5998a511
+
 	@Override
 	public AccountTransfer transferHistory(AccountTransfer transfer) {
 		String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount), " +
