@@ -1,10 +1,13 @@
 package com.techelevator.tenmo.dao;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
+
 
 import com.techelevator.tenmo.model.AccountTransfer;
 import com.techelevator.tenmo.model.Accounts;
@@ -17,19 +20,32 @@ public class AccountsSqlDAO implements AccountsDAO {
 	public AccountsSqlDAO(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-	
-//	public void transferMoney(Account user) {
-//		String sql = "UPDATE accounts SET balance = ? WHERE user_id = ?";
-//		SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
-//		jdbcTemplate.update(results, user.getAmount(), user.getId());
-//	}
-	
+	@Override
+	public void transferMoney(Accounts user) {
+		String sql = "UPDATE accounts SET balance = ? WHERE user_id = ?";
+		SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
+		jdbcTemplate.update(results, user.getBalance(), user.getUserId());
+	}
+	@Override
 	public AccountTransfer transferHistory(AccountTransfer transfer) {
-		String sql = "INSERT INTO transfers(transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount), " +
-				"VALUES(?, ?, ?, ?, ?, ?) ";
+		String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount), " +
+				"VALUES(?, ?, ?, ?, ?) ";
 		transfer.setTransferId(getNextTransferId());
 		jdbcTemplate.update(sql, transfer.getTransferId(), transfer.getTransferTypeId(), transfer.getTransferStatusId(), transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
 		return transfer;
+	}
+	@Override
+	public List<AccountTransfer> getTransferHistory(AccountTransfer userId) {
+		List<AccountTransfer> transferList = new ArrayList<>();
+		String sql = "SELECT transfer_id, account_from, account_to, amount FROM transfers " + 
+					 "JOIN users ON transfers.account_from = users.user_id WHERE user_id = ?";
+		SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
+		while(results.next()) {
+			AccountTransfer theTransfers = new AccountTransfer();
+			theTransfers = mapToRowTransfer(results);
+			transferList.add(theTransfers);
+		}
+		return transferList;
 	}
 	
 	private AccountTransfer mapToRowTransfer(SqlRowSet rowSet) {
