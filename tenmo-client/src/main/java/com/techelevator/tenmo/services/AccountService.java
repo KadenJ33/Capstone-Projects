@@ -14,6 +14,7 @@ import com.techelevator.tenmo.models.AccountTransfer;
 import com.techelevator.tenmo.models.User;
 import com.techelevator.view.ConsoleService;
 
+
 public class AccountService {
 	
 	public static String AUTH_TOKEN = "";
@@ -24,10 +25,10 @@ public class AccountService {
 		BASE_URL = url;
 	}
 	
-	public BigDecimal viewCurrentBalance(int accountId) throws AccountServiceException {
+	public BigDecimal viewCurrentBalance() throws AccountServiceException {
 		BigDecimal account = null;
 		try {
-			account = restTemplate.exchange(BASE_URL + "balance/{accountId}", HttpMethod.GET, makeAuthEntity(AUTH_TOKEN), BigDecimal.class, accountId).getBody();
+			account = restTemplate.exchange(BASE_URL + "balance", HttpMethod.GET, makeAuthEntity(AUTH_TOKEN), BigDecimal.class).getBody();
 		} catch (RestClientResponseException ex) {
 			throw new AccountServiceException(ex.getRawStatusCode() + " : " + ex.getResponseBodyAsString());
 		}
@@ -43,6 +44,22 @@ public class AccountService {
 		}
 		return transferList;
 	}
+	
+	public void transfer(AccountTransfer transfer) throws AccountServiceException {
+		try {
+			restTemplate.exchange(BASE_URL + "accounts/transfer", HttpMethod.PUT, makeAuthEntity(AUTH_TOKEN), AccountTransfer.class);
+		} catch (RestClientResponseException ex) {
+			throw new AccountServiceException(ex.getRawStatusCode() + " : " + ex.getResponseBodyAsString());
+		}
+	}
+	
+//	public void transferHistory(AccountTransfer transfer) throws AccountServiceException {
+//		try {
+//			restTemplate.exchange(BASE_URL + "account/transfer/history", HttpMethod.POST, makeAuthEntity(AUTH_TOKEN), AccountTransfer.class);
+//		} catch (RestClientResponseException ex) {
+//			throw new AccountServiceException(ex.getRawStatusCode() + " : " + ex.getResponseBodyAsString());
+//		}
+//	}
 
 	private HttpEntity makeAuthEntity(String AUTH_TOKEN) {
 		HttpHeaders headers = new HttpHeaders();

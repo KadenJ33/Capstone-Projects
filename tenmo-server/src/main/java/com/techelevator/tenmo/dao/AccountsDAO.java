@@ -9,10 +9,9 @@ import com.techelevator.tenmo.model.TransferDTO;
 
 public interface AccountsDAO {
 
-
-	void transferMoney(AccountTransfer transfer);
+	void sendMoney(AccountTransfer transfer);
 	
-	AccountTransfer transferHistory(AccountTransfer transfer);
+	void transferHistory(AccountTransfer transfer);
 	
 	List<AccountTransfer> getTransferHistory(Long userId);
 	

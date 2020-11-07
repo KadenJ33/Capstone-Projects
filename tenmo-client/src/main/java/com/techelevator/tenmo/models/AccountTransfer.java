@@ -19,6 +19,10 @@ public class AccountTransfer {
 		this.accountTo = accountTo;
 		this.amount = amount;
 	}
+	
+	public AccountTransfer() {
+		
+	}
 
 	public int getTransferId() {
 		return transferId;

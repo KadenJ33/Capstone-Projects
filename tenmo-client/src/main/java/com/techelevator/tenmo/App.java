@@ -5,6 +5,7 @@ import java.util.Scanner;
 
 import org.springframework.web.client.RestTemplate;
 
+import com.techelevator.tenmo.models.AccountTransfer;
 import com.techelevator.tenmo.models.AuthenticatedUser;
 import com.techelevator.tenmo.models.User;
 import com.techelevator.tenmo.models.UserCredentials;
@@ -42,7 +43,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
     private User user;
     public static String AUTH_TOKEN = "";
     
-    public static void main(String[] args) throws UserServiceException {
+    public static void main(String[] args) throws UserServiceException, AccountServiceException {
     	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL));
     	app.run();
     }
@@ -52,7 +53,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		this.authenticationService = authenticationService;
 	}
 
-	public void run() throws UserServiceException {
+	public void run() throws UserServiceException, AccountServiceException {
 		System.out.println("*********************");
 		System.out.println("* Welcome to TEnmo! *");
 		System.out.println("*********************");
@@ -61,7 +62,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		mainMenu();
 	}
 
-	private void mainMenu() throws UserServiceException {
+	private void mainMenu() throws UserServiceException, AccountServiceException {
 		while(true) {
 			String choice = (String)console.getChoiceFromOptions(MAIN_MENU_OPTIONS);
 			if(MAIN_MENU_OPTION_VIEW_BALANCE.equals(choice)) {
@@ -85,22 +86,13 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 	private void viewCurrentBalance() {
 
-		System.out.println("Please enter in your account ID: ");
-		String userInput = scanner.nextLine();
-		int id = Integer.parseInt(userInput);
-		if (currentUser.getUser().getId() == id) {
 		try {
 			System.out.println("");
-			System.out.println("Your current balance is: " + accountService.viewCurrentBalance(id));
+			System.out.println("Your current balance is: " + accountService.viewCurrentBalance());
 			
 		} catch(AccountServiceException e) {
 			e.printStackTrace();
-			System.out.println("Invalid ID, try again with a valid ID");
 			}
-		} else {
-			System.out.println("");
-			System.out.println("Invalid Command. Not an authenicated user. Type in correct account ID");
-		}
 	}
 
 	private void viewTransferHistory() {
@@ -114,9 +106,10 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		
 	}
 
-	private void sendBucks() throws UserServiceException {
+	private void sendBucks() throws UserServiceException, AccountServiceException {
 		// TODO Auto-generated method stub
-		
+		BigDecimal currentBalance = accountService.viewCurrentBalance();
+		AccountTransfer theTransfer = null;
 		User[] userInfo = userService.list();
 		System.out.println("-----------------------------------");
 		System.out.println("Users");
@@ -127,18 +120,14 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		}
 		System.out.println("-----------------------------------");
 		System.out.println("");
-		System.out.println("Enter ID of user you are sending to (0 to cancel): ");
-		
-		
-		String id = scanner.nextLine();
-		for (User user : userInfo) {
-			if (Integer.parseInt(id) == user.getId()) {
-				System.out.println("Enter Amount: ");
-				String amount = scanner.nextLine();
-				BigDecimal bigDecimal = new BigDecimal(amount);
-			}
-		}
-		
+		String prompt = "Enter ID of user you are sending to (0 to cancel): ";
+		int accountTo = console.getUserInputInteger(prompt);
+		//give the user their current account balance
+		String transferAmountString = "Enter Amount";
+		int intTransferAmount = console.getUserInputInteger(transferAmountString);
+		BigDecimal transferAmount = BigDecimal.valueOf(intTransferAmount);
+		accountService.transfer(theTransfer);
+	
 		}
 
 	private void requestBucks() {
