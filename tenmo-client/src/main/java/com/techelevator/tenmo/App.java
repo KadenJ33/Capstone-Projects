@@ -13,6 +13,7 @@ import com.techelevator.tenmo.services.AccountServiceException;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.AuthenticationServiceException;
 import com.techelevator.tenmo.services.UserService;
+import com.techelevator.tenmo.services.UserServiceException;
 import com.techelevator.view.ConsoleService;
 
 public class App {
@@ -38,8 +39,10 @@ private static final String API_BASE_URL = "http://localhost:8080/";
     private UserService userService = new UserService(API_BASE_URL);
     public Scanner scanner = new Scanner(System.in);
     private AccountService accountService = new AccountService(API_BASE_URL);
+    private User user;
+    public static String AUTH_TOKEN = "";
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UserServiceException {
     	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL));
     	app.run();
     }
@@ -49,7 +52,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		this.authenticationService = authenticationService;
 	}
 
-	public void run() {
+	public void run() throws UserServiceException {
 		System.out.println("*********************");
 		System.out.println("* Welcome to TEnmo! *");
 		System.out.println("*********************");
@@ -58,7 +61,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		mainMenu();
 	}
 
-	private void mainMenu() {
+	private void mainMenu() throws UserServiceException {
 		while(true) {
 			String choice = (String)console.getChoiceFromOptions(MAIN_MENU_OPTIONS);
 			if(MAIN_MENU_OPTION_VIEW_BALANCE.equals(choice)) {
@@ -84,14 +87,19 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 		System.out.println("Please enter in your account ID: ");
 		String userInput = scanner.nextLine();
-		Long id = Long.parseLong(userInput);
+		int id = Integer.parseInt(userInput);
+		if (currentUser.getUser().getId() == id) {
 		try {
-			accountService.viewCurrentBalance(id);
-			AccountService.AUTH_TOKEN = currentUser.getToken();
-
-		}catch(AccountServiceException e) {
+			System.out.println("");
+			System.out.println("Your current balance is: " + accountService.viewCurrentBalance(id));
+			
+		} catch(AccountServiceException e) {
 			e.printStackTrace();
 			System.out.println("Invalid ID, try again with a valid ID");
+			}
+		} else {
+			System.out.println("");
+			System.out.println("Invalid Command. Not an authenicated user. Type in correct account ID");
 		}
 	}
 
@@ -106,7 +114,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		
 	}
 
-	private void sendBucks() {
+	private void sendBucks() throws UserServiceException {
 		// TODO Auto-generated method stub
 		
 		User[] userInfo = userService.list();
@@ -186,6 +194,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		    try {
 				currentUser = authenticationService.login(credentials);
 				//important
+				accountService.AUTH_TOKEN = currentUser.getToken();
 				userService.AUTH_TOKEN = currentUser.getToken();
 			} catch (AuthenticationServiceException e) {
 				System.out.println("LOGIN ERROR: "+e.getMessage());
@@ -199,4 +208,5 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		String password = console.getUserInput("Password");
 		return new UserCredentials(username, password);
 	}
+	
 }
