@@ -18,5 +18,5 @@ public interface AccountsDAO {
 	
 	List<AccountTransfer> getTransferDetails(Long userId, Long transferId);
 
-	BigDecimal getBalance(Long accountId);
+	BigDecimal getBalance(int accountId);
 }

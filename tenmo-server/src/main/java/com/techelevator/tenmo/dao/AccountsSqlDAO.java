@@ -32,10 +32,13 @@ public class AccountsSqlDAO implements AccountsDAO {
 		
 	}
 
-	public BigDecimal getBalance(Long accountId) {
+	public BigDecimal getBalance(int accountId) {
+		BigDecimal balance = null;
 		String sql = "SELECT balance FROM accounts WHERE account_id = ?";
 		SqlRowSet result = jdbcTemplate.queryForRowSet(sql, accountId);
-		BigDecimal balance = result.getBigDecimal(0);
+		if (result.next()) {
+		balance = result.getBigDecimal(1);
+		}
 		return balance;
 	}
 	
