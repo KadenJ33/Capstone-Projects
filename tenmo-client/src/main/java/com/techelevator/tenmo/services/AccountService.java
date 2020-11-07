@@ -24,10 +24,10 @@ public class AccountService {
 		BASE_URL = url;
 	}
 	
-	public BigDecimal viewCurrentBalance(int accountId) throws AccountServiceException {
+	public BigDecimal viewCurrentBalance(Long userId) throws AccountServiceException {
 		BigDecimal account = null;
 		try {
-			account = restTemplate.exchange(BASE_URL + "balance/{accountId}", HttpMethod.GET, makeAuthEntity(AUTH_TOKEN), BigDecimal.class, accountId).getBody();
+			account = restTemplate.exchange(BASE_URL + "balance/{userId}", HttpMethod.GET, makeAuthEntity(AUTH_TOKEN), BigDecimal.class, userId).getBody();
 		} catch (RestClientResponseException ex) {
 			throw new AccountServiceException(ex.getRawStatusCode() + " : " + ex.getResponseBodyAsString());
 		}
