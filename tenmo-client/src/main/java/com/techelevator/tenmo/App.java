@@ -85,13 +85,13 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 	private void viewCurrentBalance() {
 
-		System.out.println("Please enter in your account ID: ");
-		String userInput = scanner.nextLine();
-		int id = Integer.parseInt(userInput);
-		if (currentUser.getUser().getId() == id) {
+//		System.out.println("Please enter in your user ID: ");
+//		String userInput = scanner.nextLine();
+		String id = String.valueOf(currentUser.getUser().getId());
+		if (currentUser.getUser().getId() ==  Integer.parseInt(id)) {
 		try {
 			System.out.println("");
-			System.out.println("Your current balance is: " + accountService.viewCurrentBalance(id));
+			System.out.println("Your current balance is: " + accountService.viewCurrentBalance(Long.parseLong(id)));
 			
 		} catch(AccountServiceException e) {
 			e.printStackTrace();
