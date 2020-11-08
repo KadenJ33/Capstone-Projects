@@ -53,10 +53,21 @@ public class AccountController {
 		return dao.getBalance(userId);
 	}
 	
-	@RequestMapping(path = "account/transfer/history", method = RequestMethod.GET)
-	public List<AccountTransfer> transferList(Principal principal) {
-		return dao.getTransferHistory(principal);
+//	@RequestMapping(path = "account/transfer/history", method = RequestMethod.GET)
+//	public List<AccountTransfer> transferList(Principal principal) {
+//		return dao.getTransferHistory(principal);
+//	}
+	
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	@RequestMapping(path = "accounts/transfer/history", method = RequestMethod.GET)
+	public List<AccountTransfer> getTransferHistory(@Valid @RequestBody AccountTransfer history) {
+		return dao.getTransferHistory(history);
 	}
+	
+//	@RequestMapping(path = "accounts/transfer/history/recieve", method = RequestMethod.GET)
+//	public List<AccountTransfer> transferList2(@RequestBody AccountTransfer history2) {
+//		return dao.getTransferHistory(history2);
+//	}
 	
 	@RequestMapping(path = "transfer-history/{transferId}", method = RequestMethod.GET)
 	public List<AccountTransfer> detailsList( @PathVariable Long transferId, Principal principal) {

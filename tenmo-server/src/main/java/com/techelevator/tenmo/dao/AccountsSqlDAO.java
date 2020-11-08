@@ -55,22 +55,83 @@ public class AccountsSqlDAO implements AccountsDAO {
 		return balance;
 	}
 	
+//	@Override
+//	public List<AccountTransfer> getTransferHistory(Principal principal) {
+//		List<AccountTransfer> transferList = new ArrayList<>();
+//		String sql = "SELECT transfer_id, account_from, account_to, amount FROM transfers " + 
+//					 "JOIN users ON transfers.account_from = users.user_id WHERE users.username = ?";
+//		SqlRowSet results = jdbcTemplate.queryForRowSet(sql, principal.getName());
+//		while(results.next()) {
+//			AccountTransfer theTransfers = new AccountTransfer();
+//			theTransfers.setTransferId(results.getInt("transfer_id"));
+//			theTransfers.setAccountFrom(results.getInt("account_from"));
+//			theTransfers.setAccountTo(results.getInt("account_to"));
+//			theTransfers.setAmount(results.getBigDecimal("amount"));
+//			transferList.add(theTransfers);
+//		}
+//		return transferList;
+//	}
+	
 	@Override
-	public List<AccountTransfer> getTransferHistory(Principal principal) {
-		List<AccountTransfer> transferList = new ArrayList<>();
-		String sql = "SELECT transfer_id, account_from, account_to, amount FROM transfers " + 
-					 "JOIN users ON transfers.account_from = users.user_id WHERE users.username = ?";
-		SqlRowSet results = jdbcTemplate.queryForRowSet(sql, principal.getName());
+	public List<AccountTransfer> getTransferHistory(AccountTransfer history) {
+		List<AccountTransfer> transferList2 = new ArrayList<>();
+		String sql = "SELECT transfers.transfer_id, users.username, transfers.amount FROM transfers " +
+				"JOIN accounts ON accounts.account_id = transfers.account_to " +
+				"JOIN users ON users.user_id = accounts.user_id " +
+				"WHERE transfers.account_from = ? ";
+		
+		
+		SqlRowSet results = jdbcTemplate.queryForRowSet(sql, history.getAccountFrom());
 		while(results.next()) {
-			AccountTransfer theTransfers = new AccountTransfer();
-			theTransfers.setTransferId(results.getInt("transfer_id"));
-			theTransfers.setAccountFrom(results.getInt("account_from"));
-			theTransfers.setAccountTo(results.getInt("account_to"));
-			theTransfers.setAmount(results.getBigDecimal("amount"));
-			transferList.add(theTransfers);
+			AccountTransfer theHistory = mapToRowTransferHistory(results);
+			transferList2.add(theHistory);
 		}
-		return transferList;
+		
+		String sql2 = "SELECT transfers.transfer_id, users.username, transfers.amount FROM transfers " +
+				"JOIN accounts ON accounts.account_id = transfers.account_from " +
+				"JOIN users ON users.user_id = accounts.user_id " +
+				"WHERE transfers.account_to = ? ";
+		
+		SqlRowSet results2 = jdbcTemplate.queryForRowSet(sql, history.getAccountTo());
+		while(results2.next()) {
+			AccountTransfer theHistory = mapToRowTransferHistory(results2);
+			transferList2.add(theHistory);
+		}
+			return transferList2;
 	}
+	
+//	@Override
+//	public List<AccountTransfer> getTransferHistory(AccountTransfer history) {
+//		List<AccountTransfer> transferList = new ArrayList<>();
+//		String sql = "SELECT transfers.transfer_id, users.username, transfers.amount FROM transfers " +
+//				"JOIN accounts ON accounts.account_id = transfers.account_to " +
+//				"JOIN users ON users.user_id = accounts.user_id " +
+//				"WHERE transfers.account_from = ? ";
+//		
+//		
+//		SqlRowSet results = jdbcTemplate.queryForRowSet(sql, history.getAccountFrom());
+//		while(results.next()) {
+//			AccountTransfer theHistory = mapToRowTransferHistory(results);
+//			transferList.add(theHistory);
+//			}
+//		return transferList;
+//		}
+//	
+//	@Override
+//	public List<AccountTransfer> getTransferHistory2(AccountTransfer history2) {
+//		List<AccountTransfer> transferList2 = new ArrayList<>();
+//	String sql2 = "SELECT transfers.transfer_id, users.username, transfers.amount FROM transfers " +
+//			"JOIN accounts ON accounts.account_id = transfers.account_from " +
+//			"JOIN users ON users.user_id = accounts.user_id " +
+//			"WHERE transfers.account_to = ? ";
+//	
+//	SqlRowSet results2 = jdbcTemplate.queryForRowSet(sql2, history2.getAccountTo());
+//	while(results2.next()) {
+//		AccountTransfer theHistory = mapToRowTransferHistory(results2);
+//		transferList2.add(theHistory);
+//	}
+//		return transferList2;
+//}
 	
 	@Override
 	public List<AccountTransfer> getTransferDetails(Long userId, Long transferId) {
@@ -78,14 +139,14 @@ public class AccountsSqlDAO implements AccountsDAO {
 		String sql = "SELECT * FROM transfers  JOIN users ON transfers.account_from = users.user_id WHERE user_id = ? AND transfer_id = ?";
 		SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId, transferId);
 		while(results.next()) {
-			AccountTransfer theDetails = mapToRowTransferHistory(results);
+			AccountTransfer theDetails = mapToRowTransferDetails(results);
 			transferDetails.add(theDetails);
 		}
 		return transferDetails;
 	}
 	
 	
-	private AccountTransfer mapToRowTransferHistory(SqlRowSet rowSet) {
+	public AccountTransfer mapToRowTransferDetails(SqlRowSet rowSet) {
 		AccountTransfer theTransferHistory = new AccountTransfer();
 		theTransferHistory.setTransferId(rowSet.getInt("transfer_id"));
 		theTransferHistory.setTransferTypeId(rowSet.getInt("transfer_type_id"));
@@ -96,26 +157,34 @@ public class AccountsSqlDAO implements AccountsDAO {
 		return theTransferHistory;
 	}
 	
-	private void mapToRowTransfer(SqlRowSet rowSet) {
-		TransferDTO transfer = new TransferDTO();
-		transfer.setAmount(rowSet.getBigDecimal("amount"));
-		transfer.setAccountTo(rowSet.getInt("accountTo"));
+	public AccountTransfer mapToRowTransferHistory(SqlRowSet rowSet) {
+		AccountTransfer theTransferHistory = new AccountTransfer();
+		theTransferHistory.setTransferId(rowSet.getInt("transfer_id"));
+		theTransferHistory.setOtherUser(rowSet.getString("username"));
+		theTransferHistory.setAmount(rowSet.getBigDecimal("amount"));
+		return null;
 	}
 	
-	private void mapToRowAccounts(SqlRowSet rowSet) {
-		Accounts user = new Accounts();
-		user.setBalance(rowSet.getBigDecimal("amount"));
-		user.setUserId(rowSet.getInt("userId"));
-	}
-	
-	private int getNextTransferId() {
-		SqlRowSet nextIdResult = jdbcTemplate.queryForRowSet("SELECT nextval('seq_transfer_id')");
-		if(nextIdResult.next()) {
-			return nextIdResult.getInt(1);
-		} else {
-			throw new RuntimeException("Something went wrong while getting an id for the new transfer");
-		}
-	}
+//	private void mapToRowTransfer(SqlRowSet rowSet) {
+//		TransferDTO transfer = new TransferDTO();
+//		transfer.setAmount(rowSet.getBigDecimal("amount"));
+//		transfer.setAccountTo(rowSet.getInt("accountTo"));
+//	}
+//	
+//	private void mapToRowAccounts(SqlRowSet rowSet) {
+//		Accounts user = new Accounts();
+//		user.setBalance(rowSet.getBigDecimal("amount"));
+//		user.setUserId(rowSet.getInt("userId"));
+//	}
+//	
+//	private int getNextTransferId() {
+//		SqlRowSet nextIdResult = jdbcTemplate.queryForRowSet("SELECT nextval('seq_transfer_id')");
+//		if(nextIdResult.next()) {
+//			return nextIdResult.getInt(1);
+//		} else {
+//			throw new RuntimeException("Something went wrong while getting an id for the new transfer");
+//		}
+//	}
 	
 	
 	

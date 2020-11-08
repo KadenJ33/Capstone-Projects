@@ -10,6 +10,7 @@ public class AccountTransfer {
 	private int accountFrom;
 	private int accountTo;
 	private BigDecimal amount;
+	private String otherUser;
 	
 	public AccountTransfer(int transferId, int transferTypeId, int transferStatusId, int accountFrom, int accountTo, BigDecimal amount) {
 		this.transferId = transferId;
@@ -18,6 +19,14 @@ public class AccountTransfer {
 		this.accountFrom = accountFrom;
 		this.accountTo = accountTo;
 		this.amount = amount;
+	}
+	
+	public String getOtherUser() {
+		return otherUser;
+	}
+
+	public void setOtherUser(String otherUser) {
+		this.otherUser = otherUser;
 	}
 	
 	public AccountTransfer() {

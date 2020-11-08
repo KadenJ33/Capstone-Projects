@@ -12,11 +12,11 @@ public interface AccountsDAO {
 	
 	void transferMoneyTotal(AccountTransfer transfer);
 	
-//	void transferMoney(AccountTransfer transfer);
-//	
-//	void transferHistory(AccountTransfer transfer);
+	List<AccountTransfer> getTransferHistory(AccountTransfer history);
 	
-	List<AccountTransfer> getTransferHistory(Principal principal);
+//	List<AccountTransfer> getTransferHistory2(AccountTransfer history2);
+	
+//	List<AccountTransfer> getTransferHistory(Principal principal);
 	
 	List<AccountTransfer> getTransferDetails(Long userId, Long transferId);
 

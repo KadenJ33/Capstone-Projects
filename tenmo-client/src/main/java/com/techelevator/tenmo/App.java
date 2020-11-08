@@ -97,15 +97,30 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void viewTransferHistory() throws AccountServiceException {
-	AccountTransfer theTransferHistory = new AccountTransfer();
+//	AccountService theTransferHistory = new AccountService(API_BASE_URL);
+	AccountTransfer history = new AccountTransfer();
+//	AccountTransfer history2 = new AccountTransfer();
+	history.setAccountFrom(currentUser.getUser().getId());
+	history.setAccountTo(currentUser.getUser().getId());
+	AccountTransfer[] theTransferHistory = accountService.getTransferHistory(history, currentUser);
+//	AccountTransfer[] theTransferHistory2 = accountService.transferList2(history2);
+	System.out.println("-----------------------------------");
+	System.out.println("Success! This is your transfer history!");
 	System.out.println("");
+	
 	System.out.println("");
 	System.out.println("-----------------------------------");
 	System.out.println("Transfers");
 	System.out.println("ID        FROM/TO            AMOUNT");
 	System.out.println("-----------------------------------");
-	System.out.println(theTransferHistory.getTransferId() + "        FROM: " + currentUser.getUser().getUsername() + "          $" + theTransferHistory.getAmount());
-	
+	System.out.println("");
+	for (AccountTransfer theHistory : theTransferHistory) {
+		System.out.println(theHistory.getTransferId() + theHistory.getOtherUser() + theHistory.getAmount());
+		}
+//	for (AccountTransfer theHistory2 : theTransferHistory2) {
+//		System.out.println(theHistory2.getTransferId() + theHistory2.getOtherUser() + theHistory2.getAmount());
+//	}
+
 	}
 	
 	private void viewPendingRequests() {

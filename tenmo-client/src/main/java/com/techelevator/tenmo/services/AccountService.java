@@ -38,15 +38,15 @@ public class AccountService {
 		return account;
 	}
 	
-	public AccountTransfer[] transferList() throws AccountServiceException {
-		AccountTransfer[] transferHistory = null;
-		try {
-			transferHistory = restTemplate.exchange(BASE_URL + "accounts/transfer/history", HttpMethod.GET, makeAuthEntity(), AccountTransfer[].class).getBody();
-		} catch (RestClientResponseException ex) {
-			throw new AccountServiceException(ex.getRawStatusCode() + " : " + ex.getResponseBodyAsString());
-		}
-		return transferHistory;
-	}
+//	public AccountTransfer[] transferList2(AccountTransfer history2) throws AccountServiceException {
+//		AccountTransfer[] transferHistory2 = null;
+//		try {
+//			transferHistory2 = restTemplate.exchange(BASE_URL + "accounts/transfer/history/recieve", HttpMethod.GET, makeAccountTransferHistoryEntity2(history2), AccountTransfer[].class, history2).getBody();
+//		} catch (RestClientResponseException ex) {
+//			throw new AccountServiceException(ex.getRawStatusCode() + " : " + ex.getResponseBodyAsString());
+//		}
+//		return transferHistory2;
+//	}
 		
 	public AccountTransfer transferDetails(AccountTransfer accountId) throws AccountServiceException {
 		AccountTransfer transferDetails = null;
@@ -66,6 +66,16 @@ public class AccountService {
 			 new AccountServiceException(ex.getRawStatusCode() + " : " + ex.getResponseBodyAsString());
 		}
 	}
+	
+	public AccountTransfer[] getTransferHistory(AccountTransfer history, AuthenticatedUser currentUser) throws AccountServiceException {
+		AccountTransfer[] transferHistory = null;
+		try {
+			transferHistory = restTemplate.exchange(BASE_URL + "accounts/transfer/history", HttpMethod.GET, makeAccountTransferHistoryEntity(history), AccountTransfer[].class, history).getBody();
+		} catch (RestClientResponseException ex) {
+			throw new AccountServiceException(ex.getRawStatusCode() + " : " + ex.getResponseBodyAsString());
+		}
+		return transferHistory;
+	}
 
 	private HttpEntity makeAuthEntity() {
 		HttpHeaders headers = new HttpHeaders();
@@ -83,4 +93,19 @@ public class AccountService {
 	    return entity;
 	  }
 	
+	private HttpEntity<AccountTransfer> makeAccountTransferHistoryEntity(AccountTransfer history) {
+	    HttpHeaders headers = new HttpHeaders();
+	    headers.setContentType(MediaType.APPLICATION_JSON);
+	    headers.setBearerAuth(AUTH_TOKEN);
+	    HttpEntity<AccountTransfer> entity = new HttpEntity<>(history, headers);
+	    return entity;
+	}
+	
+	private HttpEntity<AccountTransfer> makeAccountTransferHistoryEntity2(AccountTransfer history2) {
+	    HttpHeaders headers = new HttpHeaders();
+	    headers.setContentType(MediaType.APPLICATION_JSON);
+	    headers.setBearerAuth(AUTH_TOKEN);
+	    HttpEntity<AccountTransfer> entity = new HttpEntity<>(history2, headers);
+	    return entity;
+	}
 }
