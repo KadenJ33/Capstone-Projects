@@ -110,6 +110,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		// TODO Auto-generated method stub
 		BigDecimal currentBalance = accountService.viewCurrentBalance();
 		AccountTransfer theTransfer = null;
+		AccountTransfer theTransferHistory = null;
 		User[] userInfo = userService.list();
 		System.out.println("-----------------------------------");
 		System.out.println("Users");
@@ -126,7 +127,8 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		String transferAmountString = "Enter Amount";
 		int intTransferAmount = console.getUserInputInteger(transferAmountString);
 		BigDecimal transferAmount = BigDecimal.valueOf(intTransferAmount);
-		accountService.transfer(theTransfer);
+		accountService.transferMoney(theTransfer);
+//		accountService.transferHistory(theTransferHistory);
 	
 		}
 

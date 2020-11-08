@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
@@ -45,17 +46,19 @@ public class AccountService {
 		return transferList;
 	}
 	
-	public void transfer(AccountTransfer transfer) throws AccountServiceException {
+	public boolean transferMoney(AccountTransfer transfer) throws AccountServiceException {
 		try {
 			restTemplate.exchange(BASE_URL + "accounts/transfer", HttpMethod.PUT, makeAuthEntity(AUTH_TOKEN), AccountTransfer.class);
 		} catch (RestClientResponseException ex) {
-			throw new AccountServiceException(ex.getRawStatusCode() + " : " + ex.getResponseBodyAsString());
+			 new AccountServiceException(ex.getRawStatusCode() + " : " + ex.getResponseBodyAsString());
+			 return false;
 		}
+		return true;
 	}
 	
 //	public void transferHistory(AccountTransfer transfer) throws AccountServiceException {
 //		try {
-//			restTemplate.exchange(BASE_URL + "account/transfer/history", HttpMethod.POST, makeAuthEntity(AUTH_TOKEN), AccountTransfer.class);
+//			restTemplate.exchange(BASE_URL + "account/transfer/history", HttpMethod.POST, makeAuthEntity(AUTH_TOKEN), AccountTransfer.class).getBody();
 //		} catch (RestClientResponseException ex) {
 //			throw new AccountServiceException(ex.getRawStatusCode() + " : " + ex.getResponseBodyAsString());
 //		}
@@ -63,6 +66,7 @@ public class AccountService {
 
 	private HttpEntity makeAuthEntity(String AUTH_TOKEN) {
 		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.setBearerAuth(AUTH_TOKEN);
 		HttpEntity entity = new HttpEntity<>(headers);
 		return entity;

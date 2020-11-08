@@ -23,25 +23,25 @@ public class AccountsSqlDAO implements AccountsDAO {
     }
 	
 	@Override
-	public void sendMoney(AccountTransfer transfer) {
+	public boolean transferMoneyTotal(AccountTransfer transfer) {
 		transferMoney(transfer);
-//		transferHistory(transfer);
+		transferHistory(transfer);
+		return false;
 	}
-	
+
 	public void transferMoney(AccountTransfer transfer) {
 		String sql = "UPDATE accounts SET balance = balance - ? WHERE user_id = ?";
-		jdbcTemplate.update(sql, transfer.getAmount(), transfer.getAccountFrom());
+		jdbcTemplate.update(sql, transfer.getAccountFrom(), transfer.getAmount());
 		
 		String sql2 = "UPDATE accounts SET balance = balance + ? WHERE user_id = ?";
-		jdbcTemplate.update(sql2, transfer.getAmount(), transfer.getAccountTo());
+		jdbcTemplate.update(sql2, transfer.getAccountTo(), transfer.getAmount());
 	}
 	
-	@Override
 	public void transferHistory(AccountTransfer transfer) {
-		String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount), " +
+		String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
 				"VALUES(?, ?, ?, ?, ?) ";
 		transfer.setTransferId(getNextTransferId());
-		jdbcTemplate.update(sql, transfer.getTransferId(), transfer.getTransferTypeId(), transfer.getTransferStatusId(), transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
+		jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(), transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
 	}
 
 	@Override

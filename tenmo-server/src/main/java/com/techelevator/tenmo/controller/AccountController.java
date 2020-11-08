@@ -37,9 +37,8 @@ public class AccountController {
 	
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	@RequestMapping(path = "accounts/transfer", method = RequestMethod.PUT)
-	public void sendMoney(@Valid @RequestBody AccountTransfer transfer) {
-		dao.sendMoney(transfer);
-		dao.transferHistory(transfer);
+	public void transferMoney(@Valid @RequestBody AccountTransfer transfer) {
+		dao.transferMoneyTotal(transfer);
 	}
 	
 //	@RequestMapping(path = "accounts/transfer/history", method = RequestMethod.POST)
