@@ -31,16 +31,16 @@ public class AccountsSqlDAO implements AccountsDAO {
 
 	public void transferMoney(AccountTransfer transfer) {
 		String sql = "UPDATE accounts SET balance = balance - ? WHERE user_id = ?";
-		jdbcTemplate.update(sql, transfer.getAccountFrom(), transfer.getAmount());
+		jdbcTemplate.update(sql, transfer.getAmount(), transfer.getAccountFrom());
 		
 		String sql2 = "UPDATE accounts SET balance = balance + ? WHERE user_id = ?";
-		jdbcTemplate.update(sql2, transfer.getAccountTo(), transfer.getAmount());
+		jdbcTemplate.update(sql2, transfer.getAmount(), transfer.getAccountTo());
 	}
 	
 	public void transferHistory(AccountTransfer transfer) {
-		String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
-				"VALUES(?, ?, ?, ?, ?) ";
-		transfer.setTransferId(getNextTransferId());
+		String sql = "INSERT INTO transfers(transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+				"VALUES(DEFAULT, ?, ?, ?, ?, ?) ";
+//		transfer.setTransferId(getNextTransferId());
 		jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(), transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
 	}
 

@@ -109,8 +109,8 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	private void sendBucks() throws UserServiceException, AccountServiceException {
 		// TODO Auto-generated method stub
 		BigDecimal currentBalance = accountService.viewCurrentBalance();
-		AccountTransfer theTransfer = null;
-		AccountTransfer theTransferHistory = null;
+		AccountTransfer theTransfer = new AccountTransfer();
+//		AccountTransfer theTransferHistory = null;
 		User[] userInfo = userService.list();
 		System.out.println("-----------------------------------");
 		System.out.println("Users");
@@ -127,7 +127,13 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		String transferAmountString = "Enter Amount";
 		int intTransferAmount = console.getUserInputInteger(transferAmountString);
 		BigDecimal transferAmount = BigDecimal.valueOf(intTransferAmount);
-		accountService.transferMoney(theTransfer);
+		theTransfer.setTransferStatusId(2);
+		theTransfer.setTransferTypeId(2);
+		theTransfer.setAmount(transferAmount);
+		theTransfer.setAccountTo(accountTo);
+		theTransfer.setAccountFrom(currentUser.getUser().getId());
+		accountService.transferMoney(theTransfer, currentUser);
+		System.out.println(currentBalance);
 //		accountService.transferHistory(theTransferHistory);
 	
 		}
