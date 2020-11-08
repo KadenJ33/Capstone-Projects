@@ -42,6 +42,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
     private AccountService accountService = new AccountService(API_BASE_URL);
     private User user;
     public static String AUTH_TOKEN = "";
+    AccountTransfer theTransfer = new AccountTransfer();
     
     public static void main(String[] args) throws UserServiceException, AccountServiceException {
     	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL));
@@ -95,22 +96,26 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 			}
 	}
 
-	private void viewTransferHistory() {
+	private void viewTransferHistory() throws AccountServiceException {
+	AccountTransfer theTransferHistory = new AccountTransfer();
+	System.out.println("");
+	System.out.println("");
+	System.out.println("-----------------------------------");
+	System.out.println("Transfers");
+	System.out.println("ID        FROM/TO            AMOUNT");
+	System.out.println("-----------------------------------");
+	System.out.println(theTransferHistory.getTransferId() + "        FROM: " + currentUser.getUser().getUsername() + "          $" + theTransferHistory.getAmount());
 	
-		
-		
 	}
-
+	
 	private void viewPendingRequests() {
-		// TODO Auto-generated method stub
+	
 		
 	}
 
 	private void sendBucks() throws UserServiceException, AccountServiceException {
-		// TODO Auto-generated method stub
-		BigDecimal currentBalance = accountService.viewCurrentBalance();
+		
 		AccountTransfer theTransfer = new AccountTransfer();
-//		AccountTransfer theTransferHistory = null;
 		User[] userInfo = userService.list();
 		System.out.println("-----------------------------------");
 		System.out.println("Users");
@@ -133,13 +138,19 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		theTransfer.setAccountTo(accountTo);
 		theTransfer.setAccountFrom(currentUser.getUser().getId());
 		accountService.transferMoney(theTransfer, currentUser);
-		System.out.println(currentBalance);
-//		accountService.transferHistory(theTransferHistory);
+		System.out.println("");
+		System.out.println("");
+		System.out.println("");
+		System.out.println("-----------------------------------");
+		System.out.println("");
+		System.out.println("Success! $" + transferAmount + " was sent to the desired account.");
+		System.out.println("");
+		System.out.println("-----------------------------------");
 	
 		}
 
 	private void requestBucks() {
-		// TODO Auto-generated method stub
+	
 		
 	}
 	

@@ -53,12 +53,9 @@ public class AccountController {
 		return dao.getBalance(userId);
 	}
 	
-	@RequestMapping(path = "transfer-history", method = RequestMethod.GET)
+	@RequestMapping(path = "account/transfer/history", method = RequestMethod.GET)
 	public List<AccountTransfer> transferList(Principal principal) {
-		
-		User user = userDao.findByUsername(principal.getName());
-		
-		return dao.getTransferHistory(user.getId());
+		return dao.getTransferHistory(principal);
 	}
 	
 	@RequestMapping(path = "transfer-history/{transferId}", method = RequestMethod.GET)

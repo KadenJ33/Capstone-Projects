@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.dao;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,10 +24,9 @@ public class AccountsSqlDAO implements AccountsDAO {
     }
 	
 	@Override
-	public boolean transferMoneyTotal(AccountTransfer transfer) {
+	public void transferMoneyTotal(AccountTransfer transfer) {
 		transferMoney(transfer);
 		transferHistory(transfer);
-		return false;
 	}
 
 	public void transferMoney(AccountTransfer transfer) {
@@ -56,11 +56,11 @@ public class AccountsSqlDAO implements AccountsDAO {
 	}
 	
 	@Override
-	public List<AccountTransfer> getTransferHistory(Long userId) {
+	public List<AccountTransfer> getTransferHistory(Principal principal) {
 		List<AccountTransfer> transferList = new ArrayList<>();
 		String sql = "SELECT transfer_id, account_from, account_to, amount FROM transfers " + 
-					 "JOIN users ON transfers.account_from = users.user_id WHERE user_id = ?";
-		SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
+					 "JOIN users ON transfers.account_from = users.user_id WHERE users.username = ?";
+		SqlRowSet results = jdbcTemplate.queryForRowSet(sql, principal.getName());
 		while(results.next()) {
 			AccountTransfer theTransfers = new AccountTransfer();
 			theTransfers.setTransferId(results.getInt("transfer_id"));

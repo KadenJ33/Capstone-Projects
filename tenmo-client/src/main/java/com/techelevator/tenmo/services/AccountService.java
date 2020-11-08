@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.services;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.http.HttpEntity;
@@ -36,24 +37,33 @@ public class AccountService {
 		}
 		return account;
 	}
-	public AccountTransfer transferList(AccountTransfer accountId) throws AccountServiceException {
-		AccountTransfer transferList = null;
+	
+	public AccountTransfer[] transferList() throws AccountServiceException {
+		AccountTransfer[] transferHistory = null;
 		try {
-			transferList = restTemplate.exchange(BASE_URL + "transfer-history/" + accountId, HttpMethod.GET, makeAuthEntity(), AccountTransfer.class).getBody();
+			transferHistory = restTemplate.exchange(BASE_URL + "accounts/transfer/history", HttpMethod.GET, makeAuthEntity(), AccountTransfer[].class).getBody();
+		} catch (RestClientResponseException ex) {
+			throw new AccountServiceException(ex.getRawStatusCode() + " : " + ex.getResponseBodyAsString());
+		}
+		return transferHistory;
+	}
+		
+	public AccountTransfer transferDetails(AccountTransfer accountId) throws AccountServiceException {
+		AccountTransfer transferDetails = null;
+		try {
+			transferDetails = restTemplate.exchange(BASE_URL + "transfer-history/" + accountId, HttpMethod.GET, makeAuthEntity(), AccountTransfer.class).getBody();
 			
 		}catch (RestClientResponseException ex) {
 			throw new AccountServiceException(ex.getRawStatusCode() + " : " + ex.getResponseBodyAsString());
 		}
-		return transferList;
+		return transferDetails;
 	}
 	
-	public boolean transferMoney(AccountTransfer transfer, AuthenticatedUser currentUser) throws AccountServiceException {
+	public void transferMoney(AccountTransfer theTransfer, AuthenticatedUser currentUser) throws AccountServiceException {
 		try {
-			restTemplate.exchange(BASE_URL + "accounts/transfer", HttpMethod.PUT, makeAccountTransferEntity(transfer), AccountTransfer.class, transfer);
-			return true;
+			restTemplate.exchange(BASE_URL + "accounts/transfer", HttpMethod.PUT, makeAccountTransferEntity(theTransfer), AccountTransfer.class, theTransfer);
 		} catch (RestClientResponseException ex) {
 			 new AccountServiceException(ex.getRawStatusCode() + " : " + ex.getResponseBodyAsString());
-			 return false;
 		}
 	}
 
@@ -72,13 +82,5 @@ public class AccountService {
 	    HttpEntity<AccountTransfer> entity = new HttpEntity<>(transfer, headers);
 	    return entity;
 	  }
-	
-//	public void transferHistory(AccountTransfer transfer) throws AccountServiceException {
-//	try {
-//		restTemplate.exchange(BASE_URL + "account/transfer/history", HttpMethod.POST, makeAuthEntity(AUTH_TOKEN), AccountTransfer.class).getBody();
-//	} catch (RestClientResponseException ex) {
-//		throw new AccountServiceException(ex.getRawStatusCode() + " : " + ex.getResponseBodyAsString());
-//	}
-//}
 	
 }
