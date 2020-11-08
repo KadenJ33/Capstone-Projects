@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,28 +25,38 @@ import com.techelevator.tenmo.model.User;
 @RestController
 @PreAuthorize("isAuthenticated()")
 
-
-
 public class AccountController {
-
-	private static final String API_BASE_URL = "http://localhost:8080/";
-	AccountsDAO dao;
-	UserDAO userDao;
+	
+	private AccountsDAO dao;
+	private UserDAO userDao;
+	
 	public AccountController(AccountsDAO accountsDao, UserDAO userDao) {
-		dao = accountsDao;
+		this.dao = accountsDao;
 		this.userDao = userDao;
 	}
 	
-	@RequestMapping(path = "/accounts/transfer", method = RequestMethod.PUT)
-	public void transferMoney(@RequestBody AccountTransfer transfer) {
-		
-		dao.transferMoney(transfer);
-		dao.transferHistory(transfer);
+	@ResponseStatus(HttpStatus.ACCEPTED)
+	@RequestMapping(path = "accounts/transfer", method = RequestMethod.PUT)
+	public void transferMoney(@Valid @RequestBody AccountTransfer transfer) {
+		dao.transferMoneyTotal(transfer);
 	}
+	
+//	@RequestMapping(path = "accounts/transfer/history", method = RequestMethod.POST)
+//	public void transferHistory(@RequestBody AccountTransfer transfer) {
+//		dao.transferHistory(transfer);
+//	}
 
+<<<<<<< HEAD
 	@RequestMapping(path = "balance/{accountId}", method = RequestMethod.GET)
 	public BigDecimal getBalance(@PathVariable Long accountId) {
 		return dao.getBalance(accountId);
+=======
+	@RequestMapping(path = "balance", method = RequestMethod.GET)
+	public BigDecimal getBalance(Principal username) {
+		String usernameString = username.getName();
+		int userId = userDao.findIdByUsername(usernameString);
+		return dao.getBalance(userId);
+>>>>>>> 3de4c209ca6460f6a32323796770f48e56c5d19c
 	}
 	
 	@RequestMapping(path = "transfer-history", method = RequestMethod.GET)

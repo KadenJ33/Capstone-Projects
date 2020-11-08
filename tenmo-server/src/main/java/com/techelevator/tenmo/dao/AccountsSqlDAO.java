@@ -23,32 +23,42 @@ public class AccountsSqlDAO implements AccountsDAO {
     }
 	
 	@Override
-	public void transferMoney(AccountTransfer transfer) {
-		String sql = "UPDATE accounts SET balance = balance - ? WHERE user_id = ?";
-		jdbcTemplate.update(sql, transfer.getAmount(), transfer.getAccountFrom());
-		
-		String sql2 = "UPDATE accounts SET balance = balance + ? WHERE user_id = ?";
-		jdbcTemplate.update(sql2, transfer.getAmount(), transfer.getAccountTo());
-		
+	public boolean transferMoneyTotal(AccountTransfer transfer) {
+		transferMoney(transfer);
+		transferHistory(transfer);
+		return false;
 	}
 
+	public void transferMoney(AccountTransfer transfer) {
+		String sql = "UPDATE accounts SET balance = balance - ? WHERE user_id = ?";
+		jdbcTemplate.update(sql, transfer.getAccountFrom(), transfer.getAmount());
+		
+		String sql2 = "UPDATE accounts SET balance = balance + ? WHERE user_id = ?";
+		jdbcTemplate.update(sql2, transfer.getAccountTo(), transfer.getAmount());
+	}
+	
+	public void transferHistory(AccountTransfer transfer) {
+		String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+				"VALUES(?, ?, ?, ?, ?) ";
+		transfer.setTransferId(getNextTransferId());
+		jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(), transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
+	}
+
+<<<<<<< HEAD
 	public BigDecimal getBalance(Long userId) {
 		BigDecimal balance = null;
 		String sql = "SELECT balance FROM accounts WHERE user_id = ?";
+=======
+	@Override
+	public BigDecimal getBalance(int userId) {
+		BigDecimal balance = null;
+		String sql = "SELECT balance FROM accounts WHERE account_id = ?";
+>>>>>>> 3de4c209ca6460f6a32323796770f48e56c5d19c
 		SqlRowSet result = jdbcTemplate.queryForRowSet(sql, userId);
 		if (result.next()) {
 		balance = result.getBigDecimal(1);
 		}
 		return balance;
-	}
-	
-	@Override
-	public AccountTransfer transferHistory(AccountTransfer transfer) {
-		String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount), " +
-				"VALUES(?, ?, ?, ?, ?) ";
-		transfer.setTransferId(getNextTransferId());
-		jdbcTemplate.update(sql, transfer.getTransferId(), transfer.getTransferTypeId(), transfer.getTransferStatusId(), transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
-		return transfer;
 	}
 	
 	@Override
