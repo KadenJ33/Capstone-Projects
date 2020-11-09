@@ -210,7 +210,13 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		System.out.println("");
 		String prompt = "Enter ID of user you are sending to (0 to cancel): ";
 		int accountTo = console.getUserInputInteger(prompt);
-		System.out.println("Your current balance is: " + accountService.viewCurrentBalance());
+		
+		if(accountTo != currentUser.getUser().getId()) {
+			System.out.println("Your current balance is: " + accountService.viewCurrentBalance());
+		} else {
+			System.out.println("Invalid ID! Please try again with a valid ID");
+			sendBucks();
+		}
 		String transferAmountString = "Enter Amount";
 		BigDecimal accountBalance = accountService.viewCurrentBalance();
 		int intTransferAmount = console.getUserInputInteger(transferAmountString);
