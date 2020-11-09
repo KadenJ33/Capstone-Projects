@@ -86,86 +86,110 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void viewCurrentBalance() {
-
-
 		try {
 			System.out.println("");
 			System.out.println("Your current balance is: " + accountService.viewCurrentBalance());
-
-			
 		} catch(AccountServiceException e) {
 			e.printStackTrace();
 			}
 	}
 
 	private void viewTransferHistory() throws AccountServiceException {
-	AccountTransfer theTransferHistory = new AccountTransfer();
-	AccountTransfer[] transferArray = null;
-	AccountTransfer[] transferReceivedArray = null;
-	AccountTransfer[] transferSentArray = null;
-	System.out.println("");
-	System.out.println("");
-	System.out.println("-----------------------------------");
-	System.out.println("Transfers");
-	System.out.println("ID        FROM/TO            AMOUNT");
-	System.out.println("-----------------------------------");
-	//transferArray = accountService.transferList();
-	transferReceivedArray = accountService.transferList2();
-	transferSentArray = accountService.transferList();
-	//AccountTransfer[] newArr = null;
-	int from = 0;
-	int to = 0;
-	BigDecimal amount = null;
-	Integer id = 0;
-	for(AccountTransfer transfer : transferSentArray) {
-		//theTransferHistory.setAccountFrom(currentUser.getUser().getId());
-		amount = transfer.getAmount();
-		id = transfer.getTransferId();
+		AccountTransfer theTransferHistory = new AccountTransfer();
+		AccountTransfer[] transferReceivedArray = null;
+		AccountTransfer[] transferSentArray = null;
+		System.out.println("");
+		System.out.println("");
+		System.out.println("-----------------------------------");
+		System.out.println("Transfers");
+		System.out.println("ID        FROM/TO            AMOUNT");
+		System.out.println("-----------------------------------");
 		
-		String nameFrom = transfer.getOtherUser();
-		//currentUser.getUser().getUsername();
-		//System.out.println(id + "   FROM: "  + nameTo + " $" + amount);
-		System.out.println(id + "   FROM: " + nameFrom + " $" + amount);
+		transferReceivedArray = accountService.transferList2();
+		transferSentArray = accountService.transferList();
+		
+		BigDecimal amount = null;
+		Integer id = null;
+		for(AccountTransfer transfer : transferSentArray) {
+			amount = transfer.getAmount();
+			id = transfer.getTransferId();
+			String nameFrom = transfer.getOtherUser();
+			System.out.println(id + "   FROM: " + nameFrom + " $" + amount);
 		}
-	for(AccountTransfer transfer : transferReceivedArray) {
-		theTransferHistory.setAccountTo(currentUser.getUser().getId());
-		amount = transfer.getAmount();
-		id = transfer.getTransferId();
-		String nameTo = transfer.getOtherUser();
-		System.out.println(id + "   TO: "  + nameTo + " $" + amount);
-		//System.out.println(id + "   TO " + nameTo + " $" + amount);
+		for(AccountTransfer transfer : transferReceivedArray) {
+			theTransferHistory.setAccountTo(currentUser.getUser().getId());
+			amount = transfer.getAmount();
+			id = transfer.getTransferId();
+			String nameTo = transfer.getOtherUser();
+			System.out.println(id + "   TO: "  + nameTo + " $" + amount);
 		}
-	//for(AccountTransfer transfer : transferArray) {
-	//	theTransferHistory.setAccountFrom(currentUser.getUser().getId());
-	//	from = transfer.getAccountFrom();
-	//	to = transfer.getAccountTo();
-	//	amount = transfer.getAmount();
-	//	id = transfer.getTransferId();
-		//user.setId(id);
-	
-	;
-	//System.out.println("         TO: " + to);
-	
-	String prompt = "Enter transfer ID to veiw details (0 to cancel): ";
-	int account = console.getUserInputInteger(prompt);
-	accountService.transferDetails(account);
-	System.out.println("-------------------");
-	System.out.println("Transfer Details");
-	System.out.println("-------------------");
-	System.out.println("Id: " + theTransferHistory.getTransferId());
-	System.out.println("From: " + currentUser.getUser().getUsername());
-	System.out.println("To: " + theTransferHistory.getAccountTo());
-	if(theTransferHistory.getTransferTypeId() == 2) {
-		System.out.println("Type: Send");
+
+			String prompt = "Enter transfer ID to veiw details (0 to cancel)";
+			int account = console.getUserInputInteger(prompt);
+			accountService.transferDetails(account);
+			for(AccountTransfer transfer : transferSentArray) {
+				if(transfer.getTransferId() == account) {
+			
+			System.out.println("-------------------");
+			System.out.println("Transfer Details");
+			System.out.println("-------------------");
+			System.out.println("Id: " + transfer.getTransferId());
+			System.out.println("From: " + transfer.getOtherUser());
+			System.out.println("To: " + currentUser.getUser().getUsername());
+			
+		transfer.setTransferTypeId(2);
+		if(transfer.getTransferTypeId() == 1) {
+			System.out.println("Transfer Type: Request");
+		} else if(transfer.getTransferTypeId() == 2) {
+				System.out.println("Transfer Type: Send");
+			} else {
+			System.out.println("NO TRANSFER TYPE!");
+		}
+		transfer.setTransferStatusId(2);
+		if(transfer.getTransferStatusId() == 1) {
+			System.out.println("Transfer Status: Pending");
+		} else if(transfer.getTransferStatusId() == 2) {
+			System.out.println("Transfer Status: Approved");
+		} else if(transfer.getTransferStatusId() == 3) {
+			System.out.println("Transfer Status: Rejected");
+		} else {
+			System.out.println("NO TRANSFER STATUS!");
+		}
+		System.out.println("Amount: $" + transfer.getAmount());
+		}
+		}
+			for(AccountTransfer transfer : transferReceivedArray) {
+				if(transfer.getTransferId() == account) {
+			
+			System.out.println("-------------------");
+			System.out.println("Transfer Details");
+			System.out.println("-------------------");
+			System.out.println("Id: " + transfer.getTransferId());
+			System.out.println("From: " + currentUser.getUser().getUsername());
+			System.out.println("To: " + transfer.getOtherUser());
+			
+		transfer.setTransferTypeId(2);
+		if(transfer.getTransferTypeId() == 1) {
+			System.out.println("Transfer Type: Request");
+		} else if(transfer.getTransferTypeId() == 2) {
+				System.out.println("Transfer Type: Send");
+			} else {
+			System.out.println("NO TRANSFER TYPE!");
+		}
+		transfer.setTransferStatusId(2);
+		if(transfer.getTransferStatusId() == 1) {
+			System.out.println("Transfer Status: Pending");
+		} else if(transfer.getTransferStatusId() == 2) {
+			System.out.println("Transfer Status: Approved");
+		} else if(transfer.getTransferStatusId() == 3) {
+			System.out.println("Transfer Status: Rejected");
+		} else {
+			System.out.println("NO TRANSFER STATUS!");
+		}
+		System.out.println("Amount: $" + transfer.getAmount());
+		}
+		}
 	}
-	if(theTransferHistory.getTransferStatusId() == 2) {
-		System.out.println("Status: Approved");
-	}
-	System.out.println("Amount: $" + theTransferHistory.getAmount());
-	
-	
-	}
-	
 	private void viewPendingRequests() {
 	
 		
@@ -186,25 +210,29 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		System.out.println("");
 		String prompt = "Enter ID of user you are sending to (0 to cancel): ";
 		int accountTo = console.getUserInputInteger(prompt);
-		//give the user their current account balance
+		System.out.println("Your current balance is: " + accountService.viewCurrentBalance());
 		String transferAmountString = "Enter Amount";
+		BigDecimal accountBalance = accountService.viewCurrentBalance();
 		int intTransferAmount = console.getUserInputInteger(transferAmountString);
 		BigDecimal transferAmount = BigDecimal.valueOf(intTransferAmount);
-		theTransfer.setTransferStatusId(2);
-		theTransfer.setTransferTypeId(2);
-		theTransfer.setAmount(transferAmount);
-		theTransfer.setAccountTo(accountTo);
-		theTransfer.setAccountFrom(currentUser.getUser().getId());
-		accountService.transferMoney(theTransfer, currentUser);
-		System.out.println("");
-		System.out.println("");
-		System.out.println("");
-		System.out.println("-----------------------------------");
-		System.out.println("");
-		System.out.println("Success! $" + transferAmount + " was sent to the desired account.");
-		System.out.println("");
-		System.out.println("-----------------------------------");
-	
+		if(accountBalance.compareTo(transferAmount) >= 0) {
+			theTransfer.setTransferStatusId(2);
+			theTransfer.setTransferTypeId(2);
+			theTransfer.setAmount(transferAmount);
+			theTransfer.setAccountTo(accountTo);
+			theTransfer.setAccountFrom(currentUser.getUser().getId());
+			accountService.transferMoney(theTransfer, currentUser);
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			System.out.println("-----------------------------------");
+			System.out.println("");
+			System.out.println("Success! $" + transferAmount + " was sent to the desired account.");
+			System.out.println("");
+			System.out.println("-----------------------------------");
+		} else {
+			System.out.println("Your account balance is too low. Please try again with a valid amount.");
+		}
 		}
 
 	private void requestBucks() {

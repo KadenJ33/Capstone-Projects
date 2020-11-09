@@ -41,11 +41,6 @@ public class AccountController {
 		dao.transferMoneyTotal(transfer);
 	}
 	
-//	@RequestMapping(path = "accounts/transfer/history", method = RequestMethod.POST)
-//	public void transferHistory(@RequestBody AccountTransfer transfer) {
-//		dao.transferHistory(transfer);
-//	}
-
 	@RequestMapping(path = "balance", method = RequestMethod.GET)
 	public BigDecimal getBalance(Principal username) {
 		String usernameString = username.getName();
@@ -67,8 +62,6 @@ public class AccountController {
 			int userId = userDao.findIdByUsername(usernameIdString);
 		return dao.getTransferHistoryReceived(principal);
 	}
-	
-	
 	
 	@RequestMapping(path = "accounts/transfer/history/details/{transferId}", method = RequestMethod.GET)
 	public List<AccountTransfer> detailsList( @PathVariable int transferId, Principal principal) {

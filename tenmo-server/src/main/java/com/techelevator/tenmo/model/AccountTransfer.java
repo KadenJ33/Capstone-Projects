@@ -80,7 +80,4 @@ public class AccountTransfer {
 	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
 	}
-	
-	
-
 }
