@@ -18,7 +18,9 @@ public interface AccountsDAO {
 	
 //	List<AccountTransfer> getTransferHistory(Principal principal);
 	
-	List<AccountTransfer> getTransferDetails(Long userId, Long transferId);
+	List<AccountTransfer> getTransferDetails(Long userId, int transferId);
 
-	BigDecimal getBalance(int accountId);
+	BigDecimal getBalance(int userId);
+
+	List<AccountTransfer> getTransferHistoryReceived(Principal principal);
 }

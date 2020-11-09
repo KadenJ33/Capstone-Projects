@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 
 public class AccountTransfer {
 
+	private String otherUser;
+	
+
 	private int transferId;
 	private int transferTypeId;
 	private int transferStatusId;
@@ -24,6 +27,7 @@ public class AccountTransfer {
 //	public AccountTransfer() {
 //		
 //	}
+<<<<<<< HEAD
 	
 	public String getOtherUser() {
 		return otherUser;
@@ -32,7 +36,16 @@ public class AccountTransfer {
 	public void setOtherUser(String otherUser) {
 		this.otherUser = otherUser;
 	}
+=======
+	public String getOtherUser() {
+		return otherUser;
+	}
+>>>>>>> 47bad9a61fe3af776671e1fbbb28589a68a1770e
 
+	public void setOtherUser(String otherUser) {
+		this.otherUser = otherUser;
+	}
+	
 	public int getTransferId() {
 		return transferId;
 	}

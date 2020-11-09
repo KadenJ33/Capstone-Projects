@@ -16,10 +16,11 @@ import com.techelevator.tenmo.model.TransferDTO;
 
 @Component
 public class AccountsSqlDAO implements AccountsDAO {
-
+	private UserDAO dao;
 	private JdbcTemplate jdbcTemplate;
 	
-	public AccountsSqlDAO(JdbcTemplate jdbcTemplate) {
+	public AccountsSqlDAO(JdbcTemplate jdbcTemplate, UserDAO dao) {
+		this.dao = dao;
         this.jdbcTemplate = jdbcTemplate;
     }
 	
@@ -44,6 +45,7 @@ public class AccountsSqlDAO implements AccountsDAO {
 		jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(), transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
 	}
 
+
 	@Override
 	public BigDecimal getBalance(int userId) {
 		BigDecimal balance = null;
@@ -65,11 +67,16 @@ public class AccountsSqlDAO implements AccountsDAO {
 //			AccountTransfer theTransfers = new AccountTransfer();
 //			theTransfers.setTransferId(results.getInt("transfer_id"));
 //			theTransfers.setAccountFrom(results.getInt("account_from"));
+<<<<<<< HEAD
 //			theTransfers.setAccountTo(results.getInt("account_to"));
+=======
+	//		theTransfers.setAccountTo(results.getInt("account_to"));
+>>>>>>> 47bad9a61fe3af776671e1fbbb28589a68a1770e
 //			theTransfers.setAmount(results.getBigDecimal("amount"));
 //			transferList.add(theTransfers);
 //		}
 //		return transferList;
+<<<<<<< HEAD
 //	}
 	
 	@Override
@@ -85,6 +92,51 @@ public class AccountsSqlDAO implements AccountsDAO {
 		while(results.next()) {
 			AccountTransfer theHistory = mapToRowTransferHistory(results);
 			transferList2.add(theHistory);
+=======
+//		
+//	}
+	
+	public List<AccountTransfer> getTransferHistory(Principal principal) {
+		List<AccountTransfer> transferList = new ArrayList<>();
+		
+		String sql = "SELECT transfers.transfer_id, users.username, transfers.amount FROM transfers " + 
+				"JOIN accounts ON accounts.account_id = transfers.account_from " + 
+				"LEFT OUTER JOIN users ON users.user_id = accounts.user_id " + 
+				"WHERE transfers.account_to = ?";
+		int userId = dao.findIdByUsername(principal.getName());
+		//String sql = "SELECT transfer_id, account_from, account_to, amount FROM transfers " + 
+		//			 "JOIN users ON transfers.account_from = users.user_id WHERE users.username = ?";
+		SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
+		while(results.next()) {
+			AccountTransfer theTransfers = new AccountTransfer();
+			theTransfers.setTransferId(results.getInt("transfer_id"));
+			theTransfers.setOtherUser(results.getString("username"));
+			theTransfers.setAmount(results.getBigDecimal("amount"));
+			transferList.add(theTransfers);
+		}
+		return transferList;
+	}
+	@Override
+	public List<AccountTransfer> getTransferHistoryReceived(Principal principal) {
+		List<AccountTransfer> transferList = new ArrayList<>();
+		String sql = "SELECT transfers.transfer_id, users.username, transfers.amount FROM transfers " + 
+				"JOIN accounts ON accounts.account_id = transfers.account_to " + 
+				"LEFT OUTER JOIN users ON users.user_id = accounts.user_id " + 
+				"WHERE transfers.account_from = ?";
+		
+		int userId = dao.findIdByUsername(principal.getName());
+		//String sql = "SELECT t.transfer_id, t.account_from, t.account_to, t.amount, u.username FROM transfers t " + 
+		//			 "JOIN users u ON transfers.account_to = users.user_id WHERE users.username = ?";
+		SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
+		while(results.next()) {
+			AccountTransfer theTransfers = new AccountTransfer();
+			theTransfers.setTransferId(results.getInt("transfer_id"));
+			theTransfers.setOtherUser(results.getString("username"));
+			//theTransfers.setAccountFrom(results.getInt("account_from"));
+			//theTransfers.setAccountTo(results.getInt("account_to"));
+			theTransfers.setAmount(results.getBigDecimal("amount"));
+			transferList.add(theTransfers);
+>>>>>>> 47bad9a61fe3af776671e1fbbb28589a68a1770e
 		}
 		
 		String sql2 = "SELECT transfers.transfer_id, users.username, transfers.amount FROM transfers " +
@@ -100,6 +152,7 @@ public class AccountsSqlDAO implements AccountsDAO {
 			return transferList2;
 	}
 	
+<<<<<<< HEAD
 //	@Override
 //	public List<AccountTransfer> getTransferHistory(AccountTransfer history) {
 //		List<AccountTransfer> transferList = new ArrayList<>();
@@ -132,9 +185,12 @@ public class AccountsSqlDAO implements AccountsDAO {
 //	}
 //		return transferList2;
 //}
+=======
+	
+>>>>>>> 47bad9a61fe3af776671e1fbbb28589a68a1770e
 	
 	@Override
-	public List<AccountTransfer> getTransferDetails(Long userId, Long transferId) {
+	public List<AccountTransfer> getTransferDetails(Long userId, int transferId) {
 		List<AccountTransfer> transferDetails = new ArrayList<>();
 		String sql = "SELECT * FROM transfers  JOIN users ON transfers.account_from = users.user_id WHERE user_id = ? AND transfer_id = ?";
 		SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId, transferId);

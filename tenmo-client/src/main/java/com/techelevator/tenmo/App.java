@@ -87,9 +87,11 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 	private void viewCurrentBalance() {
 
+
 		try {
 			System.out.println("");
 			System.out.println("Your current balance is: " + accountService.viewCurrentBalance());
+
 			
 		} catch(AccountServiceException e) {
 			e.printStackTrace();
@@ -97,6 +99,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void viewTransferHistory() throws AccountServiceException {
+<<<<<<< HEAD
 //	AccountService theTransferHistory = new AccountService(API_BASE_URL);
 	AccountTransfer history = new AccountTransfer();
 //	AccountTransfer history2 = new AccountTransfer();
@@ -106,6 +109,12 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 //	AccountTransfer[] theTransferHistory2 = accountService.transferList2(history2);
 	System.out.println("-----------------------------------");
 	System.out.println("Success! This is your transfer history!");
+=======
+	AccountTransfer theTransferHistory = new AccountTransfer();
+	AccountTransfer[] transferArray = null;
+	AccountTransfer[] transferReceivedArray = null;
+	AccountTransfer[] transferSentArray = null;
+>>>>>>> 47bad9a61fe3af776671e1fbbb28589a68a1770e
 	System.out.println("");
 	
 	System.out.println("");
@@ -113,6 +122,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	System.out.println("Transfers");
 	System.out.println("ID        FROM/TO            AMOUNT");
 	System.out.println("-----------------------------------");
+<<<<<<< HEAD
 	System.out.println("");
 	for (AccountTransfer theHistory : theTransferHistory) {
 		System.out.println(theHistory.getTransferId() + theHistory.getOtherUser() + theHistory.getAmount());
@@ -121,6 +131,63 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 //		System.out.println(theHistory2.getTransferId() + theHistory2.getOtherUser() + theHistory2.getAmount());
 //	}
 
+=======
+	//transferArray = accountService.transferList();
+	transferReceivedArray = accountService.transferList2();
+	transferSentArray = accountService.transferList();
+	//AccountTransfer[] newArr = null;
+	int from = 0;
+	int to = 0;
+	BigDecimal amount = null;
+	Integer id = 0;
+	for(AccountTransfer transfer : transferSentArray) {
+		//theTransferHistory.setAccountFrom(currentUser.getUser().getId());
+		amount = transfer.getAmount();
+		id = transfer.getTransferId();
+		
+		String nameFrom = transfer.getOtherUser();
+		//currentUser.getUser().getUsername();
+		//System.out.println(id + "   FROM: "  + nameTo + " $" + amount);
+		System.out.println(id + "   FROM: " + nameFrom + " $" + amount);
+		}
+	for(AccountTransfer transfer : transferReceivedArray) {
+		theTransferHistory.setAccountTo(currentUser.getUser().getId());
+		amount = transfer.getAmount();
+		id = transfer.getTransferId();
+		String nameTo = transfer.getOtherUser();
+		System.out.println(id + "   TO: "  + nameTo + " $" + amount);
+		//System.out.println(id + "   TO " + nameTo + " $" + amount);
+		}
+	//for(AccountTransfer transfer : transferArray) {
+	//	theTransferHistory.setAccountFrom(currentUser.getUser().getId());
+	//	from = transfer.getAccountFrom();
+	//	to = transfer.getAccountTo();
+	//	amount = transfer.getAmount();
+	//	id = transfer.getTransferId();
+		//user.setId(id);
+	
+	;
+	//System.out.println("         TO: " + to);
+	
+	String prompt = "Enter transfer ID to veiw details (0 to cancel): ";
+	int account = console.getUserInputInteger(prompt);
+	accountService.transferDetails(account);
+	System.out.println("-------------------");
+	System.out.println("Transfer Details");
+	System.out.println("-------------------");
+	System.out.println("Id: " + theTransferHistory.getTransferId());
+	System.out.println("From: " + currentUser.getUser().getUsername());
+	System.out.println("To: " + theTransferHistory.getAccountTo());
+	if(theTransferHistory.getTransferTypeId() == 2) {
+		System.out.println("Type: Send");
+	}
+	if(theTransferHistory.getTransferStatusId() == 2) {
+		System.out.println("Status: Approved");
+	}
+	System.out.println("Amount: $" + theTransferHistory.getAmount());
+	
+	
+>>>>>>> 47bad9a61fe3af776671e1fbbb28589a68a1770e
 	}
 	
 	private void viewPendingRequests() {

@@ -51,8 +51,10 @@ public class AccountController {
 		String usernameString = username.getName();
 		int userId = userDao.findIdByUsername(usernameString);
 		return dao.getBalance(userId);
+
 	}
 	
+<<<<<<< HEAD
 //	@RequestMapping(path = "account/transfer/history", method = RequestMethod.GET)
 //	public List<AccountTransfer> transferList(Principal principal) {
 //		return dao.getTransferHistory(principal);
@@ -62,8 +64,25 @@ public class AccountController {
 	@RequestMapping(path = "accounts/transfer/history", method = RequestMethod.GET)
 	public List<AccountTransfer> getTransferHistory(@Valid @RequestBody AccountTransfer history) {
 		return dao.getTransferHistory(history);
+=======
+	@RequestMapping(path = "accounts/transfer/history/sent", method = RequestMethod.GET)
+	public List<AccountTransfer> transferList(Principal principal) {
+		
+		return dao.getTransferHistory(principal);
+>>>>>>> 47bad9a61fe3af776671e1fbbb28589a68a1770e
+	}
+
+	@RequestMapping(path = "accounts/transfer/history/received", method = RequestMethod.GET)
+	public List<AccountTransfer> transferList2(Principal principal) {
+		
+		 String usernameIdString = principal.getName();
+			int userId = userDao.findIdByUsername(usernameIdString);
+		return dao.getTransferHistoryReceived(principal);
 	}
 	
+	
+	
+<<<<<<< HEAD
 //	@RequestMapping(path = "accounts/transfer/history/recieve", method = RequestMethod.GET)
 //	public List<AccountTransfer> transferList2(@RequestBody AccountTransfer history2) {
 //		return dao.getTransferHistory(history2);
@@ -71,6 +90,10 @@ public class AccountController {
 	
 	@RequestMapping(path = "transfer-history/{transferId}", method = RequestMethod.GET)
 	public List<AccountTransfer> detailsList( @PathVariable Long transferId, Principal principal) {
+=======
+	@RequestMapping(path = "accounts/transfer/history/details/{transferId}", method = RequestMethod.GET)
+	public List<AccountTransfer> detailsList( @PathVariable int transferId, Principal principal) {
+>>>>>>> 47bad9a61fe3af776671e1fbbb28589a68a1770e
 		
 		User user = userDao.findByUsername(principal.getName());
 		

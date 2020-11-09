@@ -28,6 +28,7 @@ public class AccountService {
 		BASE_URL = url;
 	}
 	
+
 	public BigDecimal viewCurrentBalance() throws AccountServiceException {
 		BigDecimal account = null;
 		try {
@@ -38,6 +39,7 @@ public class AccountService {
 		return account;
 	}
 	
+<<<<<<< HEAD
 //	public AccountTransfer[] transferList2(AccountTransfer history2) throws AccountServiceException {
 //		AccountTransfer[] transferHistory2 = null;
 //		try {
@@ -47,11 +49,31 @@ public class AccountService {
 //		}
 //		return transferHistory2;
 //	}
-		
-	public AccountTransfer transferDetails(AccountTransfer accountId) throws AccountServiceException {
-		AccountTransfer transferDetails = null;
+=======
+	public AccountTransfer[] transferList() throws AccountServiceException {
+		AccountTransfer[] transferHistory = null;
 		try {
-			transferDetails = restTemplate.exchange(BASE_URL + "transfer-history/" + accountId, HttpMethod.GET, makeAuthEntity(), AccountTransfer.class).getBody();
+			transferHistory = restTemplate.exchange(BASE_URL + "accounts/transfer/history/sent", HttpMethod.GET, makeAuthEntity(), AccountTransfer[].class).getBody();
+		} catch (RestClientResponseException ex) {
+			throw new AccountServiceException(ex.getRawStatusCode() + " : " + ex.getResponseBodyAsString());
+		}
+		return transferHistory;
+	}
+	public AccountTransfer[] transferList2() throws AccountServiceException {
+		AccountTransfer[] transferHistory = null;
+		try {
+			transferHistory = restTemplate.exchange(BASE_URL + "accounts/transfer/history/received", HttpMethod.GET, makeAuthEntity(), AccountTransfer[].class).getBody();
+		} catch (RestClientResponseException ex) {
+			throw new AccountServiceException(ex.getRawStatusCode() + " : " + ex.getResponseBodyAsString());
+		}
+		return transferHistory;
+	}
+>>>>>>> 47bad9a61fe3af776671e1fbbb28589a68a1770e
+		
+	public AccountTransfer[] transferDetails(int transferId) throws AccountServiceException {
+		AccountTransfer[] transferDetails = null;
+		try {
+			transferDetails = restTemplate.exchange(BASE_URL + "accounts/transfer/history/details/" + transferId, HttpMethod.GET, makeAuthEntity(), AccountTransfer[].class).getBody();
 			
 		}catch (RestClientResponseException ex) {
 			throw new AccountServiceException(ex.getRawStatusCode() + " : " + ex.getResponseBodyAsString());
