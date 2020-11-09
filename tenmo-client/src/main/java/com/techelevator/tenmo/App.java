@@ -42,6 +42,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
     private AccountService accountService = new AccountService(API_BASE_URL);
     private User user;
     public static String AUTH_TOKEN = "";
+    AccountTransfer theTransfer = new AccountTransfer();
     
     public static void main(String[] args) throws UserServiceException, AccountServiceException {
     	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL));
@@ -86,41 +87,93 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 	private void viewCurrentBalance() {
 
-<<<<<<< HEAD
-//		System.out.println("Please enter in your user ID: ");
-//		String userInput = scanner.nextLine();
-		String id = String.valueOf(currentUser.getUser().getId());
-		if (currentUser.getUser().getId() ==  Integer.parseInt(id)) {
-		try {
-			System.out.println("");
-			System.out.println("Your current balance is: " + accountService.viewCurrentBalance(Long.parseLong(id)));
-=======
+
 		try {
 			System.out.println("");
 			System.out.println("Your current balance is: " + accountService.viewCurrentBalance());
->>>>>>> 3de4c209ca6460f6a32323796770f48e56c5d19c
+
 			
 		} catch(AccountServiceException e) {
 			e.printStackTrace();
 			}
 	}
 
-	private void viewTransferHistory() {
+	private void viewTransferHistory() throws AccountServiceException {
+	AccountTransfer theTransferHistory = new AccountTransfer();
+	AccountTransfer[] transferArray = null;
+	AccountTransfer[] transferReceivedArray = null;
+	AccountTransfer[] transferSentArray = null;
+	System.out.println("");
+	System.out.println("");
+	System.out.println("-----------------------------------");
+	System.out.println("Transfers");
+	System.out.println("ID        FROM/TO            AMOUNT");
+	System.out.println("-----------------------------------");
+	//transferArray = accountService.transferList();
+	transferReceivedArray = accountService.transferList2();
+	transferSentArray = accountService.transferList();
+	//AccountTransfer[] newArr = null;
+	int from = 0;
+	int to = 0;
+	BigDecimal amount = null;
+	Integer id = 0;
+	for(AccountTransfer transfer : transferSentArray) {
+		//theTransferHistory.setAccountFrom(currentUser.getUser().getId());
+		amount = transfer.getAmount();
+		id = transfer.getTransferId();
+		
+		String nameFrom = transfer.getOtherUser();
+		//currentUser.getUser().getUsername();
+		//System.out.println(id + "   FROM: "  + nameTo + " $" + amount);
+		System.out.println(id + "   FROM: " + nameFrom + " $" + amount);
+		}
+	for(AccountTransfer transfer : transferReceivedArray) {
+		theTransferHistory.setAccountTo(currentUser.getUser().getId());
+		amount = transfer.getAmount();
+		id = transfer.getTransferId();
+		String nameTo = transfer.getOtherUser();
+		System.out.println(id + "   TO: "  + nameTo + " $" + amount);
+		//System.out.println(id + "   TO " + nameTo + " $" + amount);
+		}
+	//for(AccountTransfer transfer : transferArray) {
+	//	theTransferHistory.setAccountFrom(currentUser.getUser().getId());
+	//	from = transfer.getAccountFrom();
+	//	to = transfer.getAccountTo();
+	//	amount = transfer.getAmount();
+	//	id = transfer.getTransferId();
+		//user.setId(id);
 	
-		
-		
+	;
+	//System.out.println("         TO: " + to);
+	
+	String prompt = "Enter transfer ID to veiw details (0 to cancel): ";
+	int account = console.getUserInputInteger(prompt);
+	accountService.transferDetails(account);
+	System.out.println("-------------------");
+	System.out.println("Transfer Details");
+	System.out.println("-------------------");
+	System.out.println("Id: " + theTransferHistory.getTransferId());
+	System.out.println("From: " + currentUser.getUser().getUsername());
+	System.out.println("To: " + theTransferHistory.getAccountTo());
+	if(theTransferHistory.getTransferTypeId() == 2) {
+		System.out.println("Type: Send");
 	}
-
+	if(theTransferHistory.getTransferStatusId() == 2) {
+		System.out.println("Status: Approved");
+	}
+	System.out.println("Amount: $" + theTransferHistory.getAmount());
+	
+	
+	}
+	
 	private void viewPendingRequests() {
-		// TODO Auto-generated method stub
+	
 		
 	}
 
 	private void sendBucks() throws UserServiceException, AccountServiceException {
-		// TODO Auto-generated method stub
-		BigDecimal currentBalance = accountService.viewCurrentBalance();
-		AccountTransfer theTransfer = null;
-		AccountTransfer theTransferHistory = null;
+		
+		AccountTransfer theTransfer = new AccountTransfer();
 		User[] userInfo = userService.list();
 		System.out.println("-----------------------------------");
 		System.out.println("Users");
@@ -137,13 +190,25 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		String transferAmountString = "Enter Amount";
 		int intTransferAmount = console.getUserInputInteger(transferAmountString);
 		BigDecimal transferAmount = BigDecimal.valueOf(intTransferAmount);
-		accountService.transferMoney(theTransfer);
-//		accountService.transferHistory(theTransferHistory);
+		theTransfer.setTransferStatusId(2);
+		theTransfer.setTransferTypeId(2);
+		theTransfer.setAmount(transferAmount);
+		theTransfer.setAccountTo(accountTo);
+		theTransfer.setAccountFrom(currentUser.getUser().getId());
+		accountService.transferMoney(theTransfer, currentUser);
+		System.out.println("");
+		System.out.println("");
+		System.out.println("");
+		System.out.println("-----------------------------------");
+		System.out.println("");
+		System.out.println("Success! $" + transferAmount + " was sent to the desired account.");
+		System.out.println("");
+		System.out.println("-----------------------------------");
 	
 		}
 
 	private void requestBucks() {
-		// TODO Auto-generated method stub
+	
 		
 	}
 	

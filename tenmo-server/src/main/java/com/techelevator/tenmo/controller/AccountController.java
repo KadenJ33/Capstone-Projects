@@ -46,29 +46,32 @@ public class AccountController {
 //		dao.transferHistory(transfer);
 //	}
 
-<<<<<<< HEAD
-	@RequestMapping(path = "balance/{accountId}", method = RequestMethod.GET)
-	public BigDecimal getBalance(@PathVariable Long accountId) {
-		return dao.getBalance(accountId);
-=======
 	@RequestMapping(path = "balance", method = RequestMethod.GET)
 	public BigDecimal getBalance(Principal username) {
 		String usernameString = username.getName();
 		int userId = userDao.findIdByUsername(usernameString);
 		return dao.getBalance(userId);
->>>>>>> 3de4c209ca6460f6a32323796770f48e56c5d19c
+
 	}
 	
-	@RequestMapping(path = "transfer-history", method = RequestMethod.GET)
+	@RequestMapping(path = "accounts/transfer/history/sent", method = RequestMethod.GET)
 	public List<AccountTransfer> transferList(Principal principal) {
 		
-		User user = userDao.findByUsername(principal.getName());
+		return dao.getTransferHistory(principal);
+	}
+
+	@RequestMapping(path = "accounts/transfer/history/received", method = RequestMethod.GET)
+	public List<AccountTransfer> transferList2(Principal principal) {
 		
-		return dao.getTransferHistory(user.getId());
+		 String usernameIdString = principal.getName();
+			int userId = userDao.findIdByUsername(usernameIdString);
+		return dao.getTransferHistoryReceived(principal);
 	}
 	
-	@RequestMapping(path = "transfer-history/{transferId}", method = RequestMethod.GET)
-	public List<AccountTransfer> detailsList( @PathVariable Long transferId, Principal principal) {
+	
+	
+	@RequestMapping(path = "accounts/transfer/history/details/{transferId}", method = RequestMethod.GET)
+	public List<AccountTransfer> detailsList( @PathVariable int transferId, Principal principal) {
 		
 		User user = userDao.findByUsername(principal.getName());
 		

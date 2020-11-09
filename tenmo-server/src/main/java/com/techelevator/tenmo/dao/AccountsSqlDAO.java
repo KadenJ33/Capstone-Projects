@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.dao;
 
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,45 +16,40 @@ import com.techelevator.tenmo.model.TransferDTO;
 
 @Component
 public class AccountsSqlDAO implements AccountsDAO {
-
+	private UserDAO dao;
 	private JdbcTemplate jdbcTemplate;
 	
-	public AccountsSqlDAO(JdbcTemplate jdbcTemplate) {
+	public AccountsSqlDAO(JdbcTemplate jdbcTemplate, UserDAO dao) {
+		this.dao = dao;
         this.jdbcTemplate = jdbcTemplate;
     }
 	
 	@Override
-	public boolean transferMoneyTotal(AccountTransfer transfer) {
+	public void transferMoneyTotal(AccountTransfer transfer) {
 		transferMoney(transfer);
 		transferHistory(transfer);
-		return false;
 	}
 
 	public void transferMoney(AccountTransfer transfer) {
 		String sql = "UPDATE accounts SET balance = balance - ? WHERE user_id = ?";
-		jdbcTemplate.update(sql, transfer.getAccountFrom(), transfer.getAmount());
+		jdbcTemplate.update(sql, transfer.getAmount(), transfer.getAccountFrom());
 		
 		String sql2 = "UPDATE accounts SET balance = balance + ? WHERE user_id = ?";
-		jdbcTemplate.update(sql2, transfer.getAccountTo(), transfer.getAmount());
+		jdbcTemplate.update(sql2, transfer.getAmount(), transfer.getAccountTo());
 	}
 	
 	public void transferHistory(AccountTransfer transfer) {
-		String sql = "INSERT INTO transfers(transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
-				"VALUES(?, ?, ?, ?, ?) ";
-		transfer.setTransferId(getNextTransferId());
+		String sql = "INSERT INTO transfers(transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+				"VALUES(DEFAULT, ?, ?, ?, ?, ?) ";
+//		transfer.setTransferId(getNextTransferId());
 		jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(), transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
 	}
 
-<<<<<<< HEAD
-	public BigDecimal getBalance(Long userId) {
-		BigDecimal balance = null;
-		String sql = "SELECT balance FROM accounts WHERE user_id = ?";
-=======
+
 	@Override
 	public BigDecimal getBalance(int userId) {
 		BigDecimal balance = null;
 		String sql = "SELECT balance FROM accounts WHERE account_id = ?";
->>>>>>> 3de4c209ca6460f6a32323796770f48e56c5d19c
 		SqlRowSet result = jdbcTemplate.queryForRowSet(sql, userId);
 		if (result.next()) {
 		balance = result.getBigDecimal(1);
@@ -61,25 +57,72 @@ public class AccountsSqlDAO implements AccountsDAO {
 		return balance;
 	}
 	
-	@Override
-	public List<AccountTransfer> getTransferHistory(Long userId) {
+//	@Override
+//	public List<AccountTransfer> getTransferHistory(Principal principal) {
+//		List<AccountTransfer> transferList = new ArrayList<>();
+//		String sql = "SELECT transfer_id, account_from, account_to, amount FROM transfers " + 
+//					 "JOIN users ON transfers.account_from = users.user_id WHERE users.username = ?";
+//		SqlRowSet results = jdbcTemplate.queryForRowSet(sql, principal.getName());
+//		while(results.next()) {
+//			AccountTransfer theTransfers = new AccountTransfer();
+//			theTransfers.setTransferId(results.getInt("transfer_id"));
+//			theTransfers.setAccountFrom(results.getInt("account_from"));
+	//		theTransfers.setAccountTo(results.getInt("account_to"));
+//			theTransfers.setAmount(results.getBigDecimal("amount"));
+//			transferList.add(theTransfers);
+//		}
+//		return transferList;
+//		
+//	}
+	
+	public List<AccountTransfer> getTransferHistory(Principal principal) {
 		List<AccountTransfer> transferList = new ArrayList<>();
-		String sql = "SELECT transfer_id, account_from, account_to, amount FROM transfers " + 
-					 "JOIN users ON transfers.account_from = users.user_id WHERE user_id = ?";
+		
+		String sql = "SELECT transfers.transfer_id, users.username, transfers.amount FROM transfers " + 
+				"JOIN accounts ON accounts.account_id = transfers.account_from " + 
+				"LEFT OUTER JOIN users ON users.user_id = accounts.user_id " + 
+				"WHERE transfers.account_to = ?";
+		int userId = dao.findIdByUsername(principal.getName());
+		//String sql = "SELECT transfer_id, account_from, account_to, amount FROM transfers " + 
+		//			 "JOIN users ON transfers.account_from = users.user_id WHERE users.username = ?";
 		SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
 		while(results.next()) {
 			AccountTransfer theTransfers = new AccountTransfer();
 			theTransfers.setTransferId(results.getInt("transfer_id"));
-			theTransfers.setAccountFrom(results.getInt("account_from"));
-			theTransfers.setAccountTo(results.getInt("account_to"));
+			theTransfers.setOtherUser(results.getString("username"));
+			theTransfers.setAmount(results.getBigDecimal("amount"));
+			transferList.add(theTransfers);
+		}
+		return transferList;
+	}
+	@Override
+	public List<AccountTransfer> getTransferHistoryReceived(Principal principal) {
+		List<AccountTransfer> transferList = new ArrayList<>();
+		String sql = "SELECT transfers.transfer_id, users.username, transfers.amount FROM transfers " + 
+				"JOIN accounts ON accounts.account_id = transfers.account_to " + 
+				"LEFT OUTER JOIN users ON users.user_id = accounts.user_id " + 
+				"WHERE transfers.account_from = ?";
+		
+		int userId = dao.findIdByUsername(principal.getName());
+		//String sql = "SELECT t.transfer_id, t.account_from, t.account_to, t.amount, u.username FROM transfers t " + 
+		//			 "JOIN users u ON transfers.account_to = users.user_id WHERE users.username = ?";
+		SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
+		while(results.next()) {
+			AccountTransfer theTransfers = new AccountTransfer();
+			theTransfers.setTransferId(results.getInt("transfer_id"));
+			theTransfers.setOtherUser(results.getString("username"));
+			//theTransfers.setAccountFrom(results.getInt("account_from"));
+			//theTransfers.setAccountTo(results.getInt("account_to"));
 			theTransfers.setAmount(results.getBigDecimal("amount"));
 			transferList.add(theTransfers);
 		}
 		return transferList;
 	}
 	
+	
+	
 	@Override
-	public List<AccountTransfer> getTransferDetails(Long userId, Long transferId) {
+	public List<AccountTransfer> getTransferDetails(Long userId, int transferId) {
 		List<AccountTransfer> transferDetails = new ArrayList<>();
 		String sql = "SELECT * FROM transfers  JOIN users ON transfers.account_from = users.user_id WHERE user_id = ? AND transfer_id = ?";
 		SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId, transferId);
