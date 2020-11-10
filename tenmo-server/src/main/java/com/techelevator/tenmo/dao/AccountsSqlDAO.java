@@ -31,7 +31,6 @@ public class AccountsSqlDAO implements AccountsDAO {
 	public void transferHistory(AccountTransfer transfer) {
 		String sql = "INSERT INTO transfers(transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
 				"VALUES(DEFAULT, ?, ?, ?, ?, ?) ";
-//		transfer.setTransferId(getNextTransferId());
 		jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(), transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
 	}
 	@Override
@@ -44,6 +43,7 @@ public class AccountsSqlDAO implements AccountsDAO {
 		}
 		return balance;
 	}
+<<<<<<< HEAD
 //	@Override
 //	public List<AccountTransfer> getTransferHistory(Principal principal) {
 //		List<AccountTransfer> transferList = new ArrayList<>();
@@ -61,6 +61,9 @@ public class AccountsSqlDAO implements AccountsDAO {
 //		return transferList;
 //		
 //	}
+=======
+	
+>>>>>>> 367f3b2793eb7ce5b29f0eeca8df03655454490e
 	public List<AccountTransfer> getTransferHistory(Principal principal) {
 		List<AccountTransfer> transferList = new ArrayList<>();
 		String sql = "SELECT transfers.transfer_id, users.username, transfers.amount FROM transfers " + 
@@ -68,8 +71,6 @@ public class AccountsSqlDAO implements AccountsDAO {
 				"LEFT OUTER JOIN users ON users.user_id = accounts.user_id " + 
 				"WHERE transfers.account_to = ?";
 		int userId = dao.findIdByUsername(principal.getName());
-		//String sql = "SELECT transfer_id, account_from, account_to, amount FROM transfers " + 
-		//			 "JOIN users ON transfers.account_from = users.user_id WHERE users.username = ?";
 		SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
 		while(results.next()) {
 			AccountTransfer theTransfers = new AccountTransfer();
@@ -88,15 +89,11 @@ public class AccountsSqlDAO implements AccountsDAO {
 				"LEFT OUTER JOIN users ON users.user_id = accounts.user_id " + 
 				"WHERE transfers.account_from = ?";
 		int userId = dao.findIdByUsername(principal.getName());
-		//String sql = "SELECT t.transfer_id, t.account_from, t.account_to, t.amount, u.username FROM transfers t " + 
-		//			 "JOIN users u ON transfers.account_to = users.user_id WHERE users.username = ?";
 		SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userId);
 		while(results.next()) {
 			AccountTransfer theTransfers = new AccountTransfer();
 			theTransfers.setTransferId(results.getInt("transfer_id"));
 			theTransfers.setOtherUser(results.getString("username"));
-			//theTransfers.setAccountFrom(results.getInt("account_from"));
-			//theTransfers.setAccountTo(results.getInt("account_to"));
 			theTransfers.setAmount(results.getBigDecimal("amount"));
 			transferList.add(theTransfers);
 		}
@@ -113,6 +110,10 @@ public class AccountsSqlDAO implements AccountsDAO {
 		}
 		return transferDetails;
 	}
+<<<<<<< HEAD
+=======
+	
+>>>>>>> 367f3b2793eb7ce5b29f0eeca8df03655454490e
 	private AccountTransfer mapToRowTransferHistory(SqlRowSet rowSet) {
 		AccountTransfer theTransferHistory = new AccountTransfer();
 		theTransferHistory.setTransferId(rowSet.getInt("transfer_id"));
@@ -141,4 +142,8 @@ public class AccountsSqlDAO implements AccountsDAO {
 			throw new RuntimeException("Something went wrong while getting an id for the new transfer");
 		}
 	}
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 367f3b2793eb7ce5b29f0eeca8df03655454490e
